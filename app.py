@@ -11,7 +11,6 @@ from datetime import datetime
 from sklearn.preprocessing import StandardScaler
 import gspread
 from google.oauth2.service_account import Credentials
-import joblib
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
@@ -518,7 +517,7 @@ def feedback():
     try:
         data = request.json
         row_id       = data.get('id')
-        feedback_val = data.get('feedback')   # 'yes' | 'no'
+        feedback_val = data.get('feedback')   # 'Yes' | 'No'
         tab          = data.get('tab')        # 'UTI' | 'Heart' | 'Liver' | 'COPD' | 'Pancreatic'
         update_feedback(tab, row_id, feedback_val)
         return jsonify({'status': 'ok'})
