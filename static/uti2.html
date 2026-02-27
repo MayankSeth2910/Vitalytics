@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UTI Diagnostic Assistant - Vitalytics</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: hsl(187, 72%, 35%);
+    --primary-light: hsl(187, 72%, 45%);
+    --primary-glow: hsl(187, 80%, 60%);
+    --bg: hsl(200, 20%, 98%);
+    --card: hsl(0, 0%, 100%);
+    --text: hsl(210, 20%, 15%);
+    --text-muted: hsl(210, 10%, 45%);
+    --border: hsl(210, 15%, 90%);
+    --destructive: hsl(0, 72%, 51%);
+    --success: hsl(142, 60%, 40%);
+    --warning: hsl(38, 92%, 50%);
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    --shadow-lg: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  a { text-decoration: none; color: inherit; }
+
+  /* Navbar */
+  .navbar { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+  .navbar .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { font-size: 1.4rem; font-weight: 700; color: var(--primary); letter-spacing: -0.5px; }
+  .logo span { color: var(--text); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-size: 0.9rem; font-weight: 500; color: var(--text-muted); transition: color 0.2s; }
+  .nav-links a:hover, .nav-links a.active { color: var(--primary); }
+  .menu-btn { display: none; background: none; border: none; cursor: pointer; }
+  .menu-btn svg { width: 24px; height: 24px; stroke: var(--text); }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; background: var(--card); border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; gap: 1rem; box-shadow: var(--shadow-lg); }
+    .nav-links.open { display: flex; }
+    .menu-btn { display: block; }
+  }
+
+  /* Hero */
+  .hero { background: linear-gradient(135deg, hsl(187,72%,95%), hsl(187,72%,90%)); border-bottom: 1px solid var(--border); padding: 3rem 1.5rem; text-align: center; }
+  .hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .hero p { color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+
+  /* Form */
+  .form-section { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+  .form-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem 2rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); opacity: 0; transform: translateY(20px); animation: fadeUp 0.5s ease forwards; }
+  .form-card:nth-child(2) { animation-delay: 0.1s; }
+  .form-card:nth-child(3) { animation-delay: 0.2s; }
+  .form-card:nth-child(4) { animation-delay: 0.3s; }
+
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+  .section-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+  .section-icon { width: 40px; height: 40px; border-radius: 10px; background: hsl(187,72%,92%); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+  .section-header h2 { font-size: 1.15rem; font-weight: 600; }
+
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.25rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+  .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+  .form-group label .req { color: var(--destructive); }
+  .form-group .desc { font-size: 0.75rem; color: var(--text-muted); }
+
+  .form-group input, .form-group select {
+    height: 40px; border: 1px solid var(--border); border-radius: 8px; padding: 0 0.75rem;
+    font-size: 0.9rem; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px hsl(187,72%,35%,0.12); }
+  .form-group.error input, .form-group.error select { border-color: var(--destructive); }
+  .form-group .error-msg { font-size: 0.75rem; color: var(--destructive); min-height: 1em; }
+
+  /* Disclaimer */
+  .disclaimer { display: flex; gap: 0.75rem; align-items: flex-start; background: hsl(210,15%,96%); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .disclaimer svg { flex-shrink: 0; width: 20px; height: 20px; stroke: var(--text-muted); margin-top: 2px; }
+  .disclaimer p { font-size: 0.85rem; color: var(--text-muted); }
+
+  /* Submit */
+  .submit-wrap { text-align: center; margin-bottom: 2rem; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 3rem;
+    background: var(--primary); color: #fff; border: none; border-radius: 8px;
+    font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 20px hsl(187,72%,35%,0.3);
+  }
+  .btn-primary:hover { background: var(--primary-light); box-shadow: 0 0 30px hsl(187,72%,35%,0.45); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-primary .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Results */
+  .results-section { max-width: 900px; margin: 0 auto 3rem; padding: 0 1.5rem; display: none; }
+  .results-section.visible { display: block; }
+  .result-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); animation: fadeUp 0.5s ease forwards; }
+  .result-header { padding: 2rem; text-align: center; color: #fff; }
+  .result-header.positive { background: linear-gradient(135deg, hsl(0,60%,50%), hsl(20,80%,50%)); }
+  .result-header.negative { background: linear-gradient(135deg, var(--primary), hsl(160,60%,40%)); }
+  .result-header h2 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+  .result-header p { opacity: 0.9; }
+
+  .result-body { padding: 2rem; }
+  .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
+  .stat-card .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+  .stat-card .stat-value { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
+  .stat-card .stat-value.pos { color: var(--destructive); }
+  .stat-card .stat-value.neg { color: var(--success); }
+
+  .detail-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+  .detail-table th, .detail-table td { padding: 0.6rem 1rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+  .detail-table th { background: var(--bg); font-weight: 600; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .detail-table tr:last-child td { border-bottom: none; }
+  .detail-table td:last-child { font-weight: 600; }
+
+  .risk-list { list-style: none; margin-top: 1rem; }
+  .risk-list li { padding: 0.5rem 0 0.5rem 1.5rem; position: relative; font-size: 0.9rem; color: var(--text-muted); }
+  .risk-list li::before { content: '⚠'; position: absolute; left: 0; }
+
+  .rec-list { list-style: none; margin-top: 1rem; }
+  .rec-list li { padding: 0.5rem 0 0.5rem 1.5rem; position: relative; font-size: 0.9rem; color: var(--text-muted); }
+  .rec-list li::before { content: '✓'; position: absolute; left: 0; color: var(--success); font-weight: 700; }
+
+  .sub-heading { font-size: 1rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.25rem; }
+
+  /* Footer */
+  .footer { background: var(--text); color: hsl(210,10%,70%); padding: 2rem 1.5rem; text-align: center; font-size: 0.8rem; }
+  .footer a { color: var(--primary-glow); }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="container">
+    <a href="index.html" class="logo">Vital<span>ytics</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="assesment.html" class="active">Assessment</a></li>
+      <li><a href="descript.html">How It Works</a></li>
+    </ul>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>Urinalysis Report</h1>
+  <p>Enter patient urinalysis data for automated diagnosis prediction. Fields marked with <span style="color:var(--destructive)">*</span> are required.</p>
+</section>
+
+<!-- Form -->
+<div class="form-section">
+  <form id="urinalysisForm" novalidate>
+
+    <!-- Demographics -->
+    <div class="form-card">
+      <div class="section-header">
+        <div class="section-icon">👤</div>
+        <h2>Patient Demographics</h2>
+      </div>
+      <div class="form-grid">
+        <div class="form-group" data-field="age">
+          <label>Age <span class="req">*</span></label>
+          <input type="number" name="age" id="age" placeholder="e.g., 45" min="0" max="120" step="1">
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="gender">
+          <label>Gender <span class="req">*</span></label>
+          <select name="gender" id="gender">
+            <option value="">Select gender</option>
+            <option value="FEMALE">Female</option>
+            <option value="MALE">Male</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Physical Properties -->
+    <div class="form-card">
+      <div class="section-header">
+        <div class="section-icon">🔬</div>
+        <h2>Physical Properties</h2>
+      </div>
+      <div class="form-grid">
+        <div class="form-group" data-field="color">
+          <label>Color <span class="req">*</span></label>
+          <select name="color" id="color">
+            <option value="">Select color</option>
+            <option value="YELLOW">Yellow</option>
+            <option value="LIGHT YELLOW">Light Yellow</option>
+            <option value="DARK YELLOW">Dark Yellow</option>
+            <option value="STRAW">Straw</option>
+            <option value="AMBER">Amber</option>
+            <option value="BROWN">Brown</option>
+            <option value="RED">Red</option>
+            <option value="REDDISH">Reddish</option>
+            <option value="REDDISH YELLOW">Reddish Yellow</option>
+            <option value="LIGHT RED">Light Red</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="transparency">
+          <label>Transparency <span class="req">*</span></label>
+          <select name="transparency" id="transparency">
+            <option value="">Select transparency</option>
+            <option value="CLEAR">Clear</option>
+            <option value="SLIGHTLY HAZY">Slightly Hazy</option>
+            <option value="HAZY">Hazy</option>
+            <option value="TURBID">Turbid</option>
+            <option value="CLOUDY">Cloudy</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chemical Analysis -->
+    <div class="form-card">
+      <div class="section-header">
+        <div class="section-icon">🧪</div>
+        <h2>Chemical Analysis</h2>
+      </div>
+      <div class="form-grid">
+        <div class="form-group" data-field="glucose">
+          <label>Glucose <span class="req">*</span></label>
+          <select name="glucose" id="glucose">
+            <option value="">Select glucose level</option>
+            <option value="NEGATIVE">Negative</option>
+            <option value="TRACE">Trace</option>
+            <option value="1+">1+</option>
+            <option value="2+">2+</option>
+            <option value="3+">3+</option>
+            <option value="4+">4+</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="protein">
+          <label>Protein <span class="req">*</span></label>
+          <select name="protein" id="protein">
+            <option value="">Select protein level</option>
+            <option value="NEGATIVE">Negative</option>
+            <option value="TRACE">Trace</option>
+            <option value="1+">1+</option>
+            <option value="2+">2+</option>
+            <option value="3+">3+</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="ph">
+          <label>pH <span class="req">*</span></label>
+          <input type="number" name="ph" id="ph" placeholder="e.g., 6.5" min="0" max="14" step="0.1">
+          <span class="desc">Normal range: 4.5 – 8.0</span>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="specificGravity">
+          <label>Specific Gravity <span class="req">*</span></label>
+          <input type="number" name="specificGravity" id="specificGravity" placeholder="e.g., 1.020" min="1.000" max="1.040" step="0.001">
+          <span class="desc">Normal range: 1.005 – 1.030</span>
+          <span class="error-msg"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Microscopic Examination -->
+    <div class="form-card">
+      <div class="section-header">
+        <div class="section-icon">🔎</div>
+        <h2>Microscopic Examination</h2>
+      </div>
+      <div class="form-grid">
+        <div class="form-group" data-field="wbc">
+          <label>WBC <span class="req">*</span></label>
+          <input type="number" name="wbc" id="wbc" placeholder="e.g., 5" min="0" step="0.1">
+          <span class="desc">White Blood Cells (per HPF)</span>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="rbc">
+          <label>RBC <span class="req">*</span></label>
+          <input type="number" name="rbc" id="rbc" placeholder="e.g., 2" min="0" step="0.1">
+          <span class="desc">Red Blood Cells (per HPF)</span>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="epithelialCells">
+          <label>Epithelial Cells <span class="req">*</span></label>
+          <select name="epithelialCells" id="epithelialCells">
+            <option value="">Select level</option>
+            <option value="NONE SEEN">None Seen</option>
+            <option value="RARE">Rare</option>
+            <option value="OCCASIONAL">Occasional</option>
+            <option value="FEW">Few</option>
+            <option value="MODERATE">Moderate</option>
+            <option value="PLENTY">Plenty</option>
+            <option value="LOADED">Loaded</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="mucousThreads">
+          <label>Mucous Threads <span class="req">*</span></label>
+          <select name="mucousThreads" id="mucousThreads">
+            <option value="">Select level</option>
+            <option value="NONE SEEN">None Seen</option>
+            <option value="RARE">Rare</option>
+            <option value="OCCASIONAL">Occasional</option>
+            <option value="FEW">Few</option>
+            <option value="MODERATE">Moderate</option>
+            <option value="PLENTY">Plenty</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="amorphousUrates">
+          <label>Amorphous Urates <span class="req">*</span></label>
+          <select name="amorphousUrates" id="amorphousUrates">
+            <option value="">Select level</option>
+            <option value="NONE SEEN">None Seen</option>
+            <option value="RARE">Rare</option>
+            <option value="OCCASIONAL">Occasional</option>
+            <option value="FEW">Few</option>
+            <option value="MODERATE">Moderate</option>
+            <option value="PLENTY">Plenty</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="bacteria">
+          <label>Bacteria <span class="req">*</span></label>
+          <select name="bacteria" id="bacteria">
+            <option value="">Select level</option>
+            <option value="RARE">Rare</option>
+            <option value="OCCASIONAL">Occasional</option>
+            <option value="FEW">Few</option>
+            <option value="MODERATE">Moderate</option>
+            <option value="PLENTY">Plenty</option>
+            <option value="LOADED">Loaded</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-wrap">
+      <button type="submit" class="btn-primary" id="submitBtn">
+        Analyze Health
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p>This tool is for educational and screening purposes only and is not a medical diagnosis. Always consult a healthcare professional for medical advice.</p>
+    </div>
+  </form>
+</div>
+
+<!-- Results -->
+<div class="results-section" id="resultsSection">
+  <div class="result-card">
+    <div class="result-header" id="resultHeader">
+      <h2 id="resultTitle">--</h2>
+      <p id="resultSubtitle">--</p>
+    </div>
+    <div class="result-body">
+      <div class="result-grid" id="resultStats"></div>
+
+      <h3 class="sub-heading">Submitted Values</h3>
+      <table class="detail-table">
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody id="detailBody"></tbody>
+      </table>
+
+      <h3 class="sub-heading">Observations</h3>
+      <ul class="risk-list" id="riskList"></ul>
+
+      <h3 class="sub-heading">Recommendations</h3>
+      <ul class="rec-list" id="recList"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <p>&copy; 2026 Vitanalytics. For educational purposes only. Not a substitute for professional medical advice.</p>
+</footer>
+
+<script>
+document.getElementById('menuBtn').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+const API = '';
+let lastResult = null;
+
+document.getElementById('urinalysisForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn  = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = 'Analyzing... <div style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle"></div>';
+
+  const g = id => document.getElementById(id);
+  const payload = {
+    Age:              g('age').value,
+    Gender:           g('gender').value,
+    Color:            g('color').value,
+    Transparency:     g('transparency').value,
+    pH:               g('ph').value,
+    'Specific Gravity': g('specificGravity').value,
+    WBC:              g('wbc').value,
+    RBC:              g('rbc').value,
+    Glucose:          g('glucose').value,
+    Protein:          g('protein').value,
+    'Epithelial Cells': g('epithelialCells').value,
+    'Mucous Threads': g('mucousThreads').value,
+    'Amorphous Urates': g('amorphousUrates').value,
+    Bacteria:         g('bacteria').value,
+  };
+
+  try {
+    const res  = await fetch(`${API}/predict/uti`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    lastResult = data;
+    showUTIResult(data);
+    setTimeout(() => document.getElementById('feedbackOverlay').classList.add('open'), 1500);
+  } catch (err) {
+    alert('Prediction error: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Analyze Health <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+  }
+});
+
+function showUTIResult(data) {
+  let card = document.getElementById('utiResultCard');
+  if (!card) {
+    card = document.createElement('div');
+    card.id = 'utiResultCard';
+    card.style.cssText = 'background:#fff;border:2px solid #ccc;border-radius:12px;padding:2rem;margin:1.5rem auto;max-width:900px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.06)';
+    document.querySelector('.form-section').prepend(card);
+  }
+  const isPos = data.prediction === 'POSITIVE';
+  card.style.borderColor = isPos ? '#ef4444' : '#22c55e';
+  card.innerHTML = `
+    <div style="display:inline-block;padding:.5rem 1.5rem;border-radius:999px;font-size:1.1rem;font-weight:700;background:${isPos?'hsl(0,72%,95%)':'hsl(142,60%,95%)'};color:${isPos?'#ef4444':'#16a34a'};margin-bottom:1rem">
+      ${isPos ? '⚠️ UTI POSITIVE' : '✅ UTI NEGATIVE'}
+    </div>
+    <p style="color:#6b7280;font-size:.95rem;margin-bottom:1rem">${isPos ? 'Urinalysis indicators suggest a urinary tract infection. Please consult a physician.' : 'No significant UTI indicators detected in the urinalysis.'}</p>
+    ${data.confidence_pct != null ? `<div style="max-width:300px;margin:0 auto"><p style="font-size:.85rem;color:#9ca3af;margin-bottom:.4rem">Confidence: ${data.confidence_pct}%</p><div style="height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden"><div style="height:100%;width:${data.confidence_pct}%;background:hsl(187,72%,35%);border-radius:999px;transition:width .8s ease"></div></div></div>` : ''}
+  `;
+  card.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+async function sendFeedback(val) {
+  if (!lastResult) return;
+  document.getElementById('feedbackOverlay').classList.remove('open');
+  try {
+    await fetch(`${API}/feedback`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ id: lastResult.id, tab: lastResult.tab, feedback: val })
+    });
+  } catch(e) { console.warn('Feedback error', e); }
+}
+
+document.getElementById('fbYes').onclick  = () => sendFeedback('yes');
+document.getElementById('fbNo').onclick   = () => sendFeedback('no');
+document.getElementById('fbSkip').onclick = () => document.getElementById('feedbackOverlay').classList.remove('open');
+</script>
+
+
+<!-- FEEDBACK POPUP -->
+<div id="feedbackOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:12px;padding:2rem;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.15)">
+    <h3 style="font-size:1.25rem;font-weight:600;margin-bottom:.75rem">Was this diagnosis accurate?</h3>
+    <p style="color:#6b7280;margin-bottom:1.5rem;font-size:.95rem">Your feedback helps improve our prediction models.</p>
+    <div style="display:flex;gap:1rem;justify-content:center">
+      <button id="fbYes" style="padding:.6rem 2rem;background:#16a34a;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer">Yes, Correct</button>
+      <button id="fbNo"  style="padding:.6rem 2rem;background:#ef4444;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer">No, Incorrect</button>
+    </div>
+    <br>
+    <button id="fbSkip" style="background:none;border:none;color:#9ca3af;font-size:.85rem;cursor:pointer;text-decoration:underline">Skip feedback</button>
+  </div>
+</div>
+<style>#feedbackOverlay.open{display:flex!important}</style>
+</body>
+</html>

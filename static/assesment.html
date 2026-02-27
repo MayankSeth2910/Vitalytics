@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Start Assessment - VITALYTICS</title>
+
+  <style>
+
+    .organ-image {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #f5f9fa;
+}
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: hsl(200, 20%, 98%);
+      --card: #ffffff;
+      --primary: hsl(187, 72%, 35%);
+      --accent: hsl(200, 70%, 45%);
+      --text: hsl(200, 50%, 10%);
+      --muted: hsl(200, 15%, 45%);
+      --border: hsl(200, 20%, 88%);
+      --radius: 1rem;
+      --shadow: 0 12px 30px -10px hsla(187,72%,35%,0.25);
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ===== NAVBAR (SHARED) ===== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid var(--border);
+      background: hsla(200,20%,98%,0.85);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-logo-icon svg {
+      width: 20px;
+      height: 20px;
+      color: #fff;
+    }
+
+    .nav-logo span {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .nav-links a {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      border-radius: 6px;
+    }
+
+    .nav-links a.active {
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .nav-cta {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .mobile-menu a {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .mobile-menu a.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta-wrap {
+        display: none;
+      }
+      .mobile-menu-btn {
+        display: block;
+      }
+      .mobile-menu.open {
+        display: flex;
+      }
+    }
+
+    /* ===== PAGE CONTENT ===== */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .page-header p {
+      max-width: 640px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .organ-grid {
+      display: grid;
+      gap: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .organ-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .organ-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .organ-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .organ-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px -12px hsla(187,72%,35%,0.35);
+    }
+
+    .organ-image {
+      height: 160px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .organ-content {
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .organ-content h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .organ-content p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .organ-btn {
+      margin-top: auto;
+      padding: 0.6rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      font-size: 0.9rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+    }
+    /* ===== FOOTER ===== */
+    footer { border-top: 1px solid var(--border); background: hsla(200,20%,94%,0.3); }
+    .footer-inner {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 2rem 0;
+    }
+    @media (min-width: 768px) { .footer-inner { flex-direction: row; } }
+    .footer-logo { display: flex; align-items: center; gap: 0.5rem; }
+    .footer-logo-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--primary); display: flex; align-items: center; justify-content: center;
+    }
+    .footer-logo-icon svg { width: 16px; height: 16px; color: var(--primary-fg); }
+    .footer-logo span { font-size: 1.125rem; font-weight: 600; }
+    .footer-disclaimer { max-width: 28rem; text-align: center; font-size: 0.75rem; color: var(--muted-fg); }
+    .footer-made { display: flex; align-items: center; gap: 0.25rem; font-size: 0.875rem; color: var(--muted-fg); }
+    .footer-made svg { width: 16px; height: 16px; fill: var(--destructive); color: var(--destructive); }
+
+    /* Animations */
+    .fade-up { opacity: 0; transform: translateY(20px); animation: fadeUp 0.6s ease forwards; }
+    .fade-up-d1 { animation-delay: 0.1s; }
+    .fade-up-d2 { animation-delay: 0.2s; }
+    .fade-up-d3 { animation-delay: 0.3s; }
+    .fade-up-d4 { animation-delay: 0.4s; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>
+        </svg>
+      </div>
+      <span>VITALYTICS</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="descript.html">How It Works</a>
+      <a href="assesment.html" class="active">Assessment</a>
+    </div>
+
+    <div class="nav-cta-wrap">
+      <a href="assesment.html" class="nav-cta">Start Assessment</a>
+    </div>
+
+    <button class="mobile-menu-btn"
+      onclick="document.getElementById('mobileMenu').classList.toggle('open')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="4" y1="6" x2="20" y2="6"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <line x1="4" y1="18" x2="20" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="descript.html">How It Works</a>
+    <a href="assesment.html" class="active">Assessment</a>
+    <a href="assesment.html" class="nav-cta">Start Assessment</a>
+  </div>
+</nav>
+
+<!-- PAGE CONTENT -->
+<div class="container">
+  <div class="page-header">
+    <h1>Start Health Assessment</h1>
+    <p>Select the organ you want to assess. Each assessment uses a dedicated machine learning model.</p>
+  </div>
+
+  <div class="organ-grid">
+
+    <div class="organ-card">
+      <div class="organ-image" style="background-image:url('https://static.vecteezy.com/system/resources/previews/023/270/476/large_2x/lungs-cartoon-illustration-lungs-icon-lungs-flat-design-cartoon-illustration-of-human-organs-vector.jpg');
+      height:180px;
+       background-size:contain;
+       background-repeat:no-repeat;
+       background-position:center;"></div>
+      <div class="organ-content">
+        <h3>Lungs (COPD)</h3>
+        <p>Assess the risk and severity of Chronic Obstructive Pulmonary Disease.</p>
+        <a href="copd.html"><button class="organ-btn">Start Assessment</button></a>
+      </div>
+    </div>
+
+    <div class="organ-card">
+      <div class="organ-image" style="background-image:url('https://th.bing.com/th/id/OIP.9STNHfX-c7uwgiyN_LWAGgAAAA?w=181&h=181&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3');
+      height:180px;
+       background-size:contain;
+       background-repeat:no-repeat;
+       background-position:center;"></div>
+      <div class="organ-content">
+        <h3>Liver</h3>
+        <p>Evaluate liver health using biochemical and clinical indicators.</p>
+        <a href="liver.html"><button class="organ-btn">Start Assessment</button></a>
+      </div>
+    </div>
+
+    <div class="organ-card">
+      <div class="organ-image" style="background-image:url('https://th.bing.com/th/id/OIP.lo8Kd3gbFqrN1Li3qXBy-AHaF7?w=236&h=188&c=7&r=0&o=7&dpr=1.3&pid=1.7');
+      height:180px;
+       background-size:contain;
+       background-repeat:no-repeat;
+       background-position:center;"></div>
+      <div class="organ-content">
+        <h3>Pancreas</h3>
+        <p>Screen for pancreatic disease risk using predictive analytics.</p>
+        <a href="pancreatic.html"><button class="organ-btn">Start Assessment</button></a>
+      </div>
+    </div>
+
+    <div class="organ-card">
+      <div class="organ-image" style="background-image:url('https://th.bing.com/th/id/OIP._eN0szQs2VTCkWdLGOKJGwHaHa?w=177&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3');
+      height:180px;
+       background-size:contain;
+       background-repeat:no-repeat;
+       background-position:center;"></div>
+      <div class="organ-content">
+        <h3>Heart</h3>
+        <p>Analyze cardiovascular health and assess heart disease risk.</p>
+        <a href="heart.html"><button class="organ-btn">Start Assessment</button></a>
+      </div>
+    </div>
+
+    <div class="organ-card">
+      <div class="organ-image" style="background-image:url('https://th.bing.com/th/id/OIP.CWRwSTODkHVCLdY-NL1XaQHaHa?w=206&h=206&c=7&r=0&o=7&dpr=1.3&pid=1.7');
+      height:180px;
+       background-size:contain;
+       background-repeat:no-repeat;
+       background-position:center;"></div>
+      <div class="organ-content">
+        <h3>Urinalysis</h3>
+        <p>Predict kidney disease risk using vital clinical measurements.</p>
+        <a href="uti.html"><button class="organ-btn">Start Assessment</button></a>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- FOOTER -->
+<footer>
+  <div class="container footer-inner">
+    <a href="#" class="footer-logo">
+      <div class="footer-logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
+      </div>
+      <span>VITALYTICS</span>
+    </a>
+    <p class="footer-disclaimer">This tool is for educational and screening purposes only and is not a medical diagnosis. Always consult a healthcare professional for medical advice.</p>
+    <div class="footer-made">
+      <span>Made with</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+      <span>for better health</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

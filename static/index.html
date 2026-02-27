@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VITALYTICS - Smart Respiratory Health Assessment</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --background: hsl(200, 20%, 98%);
+      --foreground: hsl(200, 50%, 10%);
+      --card: hsl(0, 0%, 100%);
+      --primary: hsl(187, 72%, 35%);
+      --primary-fg: hsl(0, 0%, 100%);
+      --secondary: hsl(187, 40%, 95%);
+      --secondary-fg: hsl(187, 72%, 25%);
+      --muted: hsl(200, 20%, 94%);
+      --muted-fg: hsl(200, 15%, 45%);
+      --accent: hsl(187, 80%, 45%);
+      --border: hsl(200, 20%, 88%);
+      --destructive: hsl(0, 72%, 51%);
+      --radius: 0.75rem;
+      --gradient-primary: linear-gradient(135deg, hsl(187,72%,35%) 0%, hsl(200,70%,45%) 100%);
+      --gradient-hero: linear-gradient(180deg, hsl(200,20%,98%) 0%, hsl(187,40%,96%) 100%);
+      --shadow-card: 0 4px 20px -4px hsla(187,72%,35%,0.12);
+      --shadow-glow: 0 0 30px hsla(187,72%,35%,0.15);
+    }
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+
+    /* ===== NAVBAR ===== */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      border-bottom: 1px solid var(--border);
+      background: hsla(200,20%,98%,0.8);
+      backdrop-filter: blur(12px);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.5rem; }
+    .nav-logo-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--primary); display: flex; align-items: center; justify-content: center;
+    }
+    .nav-logo-icon svg { width: 20px; height: 20px; color: var(--primary-fg); }
+    .nav-logo span { font-size: 1.25rem; font-weight: 600; }
+    .nav-links { display: flex; gap: 0.25rem; }
+    .nav-links a {
+      padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500;
+      color: var(--muted-fg); transition: color 0.2s; border-radius: 6px;
+    }
+    .nav-links a:hover { color: var(--foreground); }
+    .nav-links a.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
+    .nav-cta {
+      padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500;
+      background: var(--primary); color: var(--primary-fg);
+      border: none; border-radius: var(--radius); cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.9; }
+    .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .mobile-menu { display: none; flex-direction: column; gap: 0.5rem; padding: 1rem; border-top: 1px solid var(--border); background: var(--background); }
+    .mobile-menu a { padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 500; color: var(--muted-fg); }
+    .mobile-menu a.active { background: var(--primary); color: var(--primary-fg); }
+
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta-wrap { display: none !important; }
+      .mobile-menu-btn { display: block; }
+      .mobile-menu.open { display: flex; }
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative; overflow: hidden; background: var(--gradient-hero);
+      padding: 5rem 0;
+    }
+    @media (min-width: 768px) { .hero { padding: 8rem 0; } }
+    .hero-bg1, .hero-bg2 {
+      position: absolute; width: 320px; height: 320px;
+      border-radius: 50%; filter: blur(80px); opacity: 0.5;
+    }
+    .hero-bg1 { right: -160px; top: -160px; background: var(--primary); opacity: 0.05; }
+    .hero-bg2 { left: -160px; top: 50%; background: var(--accent); opacity: 0.05; }
+    .hero-content { position: relative; max-width: 56rem; margin: 0 auto; text-align: center; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--secondary); color: var(--secondary-fg);
+      padding: 0.375rem 1rem; border-radius: 9999px;
+      font-size: 0.875rem; font-weight: 500; margin-bottom: 1.5rem;
+    }
+    .badge svg { width: 16px; height: 16px; }
+    .hero h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 1.5rem; }
+    @media (min-width: 768px) { .hero h1 { font-size: 3.75rem; } }
+    @media (min-width: 1024px) { .hero h1 { font-size: 4.5rem; } }
+    .hero h1 .gradient-text {
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p { max-width: 42rem; margin: 0 auto 2.5rem; font-size: 1.125rem; color: var(--muted-fg); }
+    .hero-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 2rem; font-size: 1rem; font-weight: 500;
+      background: var(--primary); color: var(--primary-fg);
+      border: none; border-radius: var(--radius); cursor: pointer;
+      box-shadow: var(--shadow-glow); transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 2rem; font-size: 1rem; font-weight: 500;
+      background: transparent; color: var(--foreground);
+      border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-outline:hover { background: var(--muted); }
+    .btn-primary svg, .btn-outline svg { width: 16px; height: 16px; }
+
+    /* ===== FEATURES ===== */
+    .features {
+      border-top: 1px solid var(--border); background: var(--background); padding: 5rem 0;
+    }
+    .features-header { text-align: center; margin-bottom: 3rem; }
+    .features-header h2 { font-size: 1.875rem; font-weight: 700; margin-bottom: 1rem; }
+    @media (min-width: 768px) { .features-header h2 { font-size: 2.25rem; } }
+    .features-header p { max-width: 42rem; margin: 0 auto; color: var(--muted-fg); }
+    .features-grid { display: grid; gap: 2rem; }
+    @media (min-width: 768px) { .features-grid { grid-template-columns: repeat(3, 1fr); } }
+    .feature-card {
+      border: 1px solid var(--border); border-radius: 1rem;
+      background: var(--card); padding: 2rem;
+      box-shadow: var(--shadow-card); transition: all 0.3s;
+    }
+    .feature-card:hover { border-color: hsla(187,72%,35%,0.3); box-shadow: var(--shadow-glow); }
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: hsla(187,72%,35%,0.1); color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem; transition: all 0.3s;
+    }
+    .feature-card:hover .feature-icon { background: var(--primary); color: var(--primary-fg); }
+    .feature-icon svg { width: 24px; height: 24px; }
+    .feature-card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .feature-card p { color: var(--muted-fg); }
+
+    /* ===== CTA ===== */
+    .cta-section { border-top: 1px solid var(--border); background: hsla(200,20%,94%,0.3); padding: 5rem 0; }
+    .cta-box {
+      position: relative; overflow: hidden; border-radius: 1.5rem;
+      background: var(--gradient-primary); padding: 2rem; text-align: center;
+      box-shadow: 0 20px 25px -5px hsla(200,50%,10%,0.1);
+    }
+    @media (min-width: 768px) { .cta-box { padding: 4rem; } }
+    .cta-box h2 { font-size: 1.875rem; font-weight: 700; color: var(--primary-fg); margin-bottom: 1rem; }
+    @media (min-width: 768px) { .cta-box h2 { font-size: 2.25rem; } }
+    .cta-box p { max-width: 36rem; margin: 0 auto 2rem; color: hsla(0,0%,100%,0.8); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 2rem; font-size: 1rem; font-weight: 500;
+      background: var(--secondary); color: var(--secondary-fg);
+      border: none; border-radius: var(--radius); cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-secondary:hover { opacity: 0.9; }
+
+    /* ===== FOOTER ===== */
+    footer { border-top: 1px solid var(--border); background: hsla(200,20%,94%,0.3); }
+    .footer-inner {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 2rem 0;
+    }
+    @media (min-width: 768px) { .footer-inner { flex-direction: row; } }
+    .footer-logo { display: flex; align-items: center; gap: 0.5rem; }
+    .footer-logo-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--primary); display: flex; align-items: center; justify-content: center;
+    }
+    .footer-logo-icon svg { width: 16px; height: 16px; color: var(--primary-fg); }
+    .footer-logo span { font-size: 1.125rem; font-weight: 600; }
+    .footer-disclaimer { max-width: 28rem; text-align: center; font-size: 0.75rem; color: var(--muted-fg); }
+    .footer-made { display: flex; align-items: center; gap: 0.25rem; font-size: 0.875rem; color: var(--muted-fg); }
+    .footer-made svg { width: 16px; height: 16px; fill: var(--destructive); color: var(--destructive); }
+
+    /* Animations */
+    .fade-up { opacity: 0; transform: translateY(20px); animation: fadeUp 0.6s ease forwards; }
+    .fade-up-d1 { animation-delay: 0.1s; }
+    .fade-up-d2 { animation-delay: 0.2s; }
+    .fade-up-d3 { animation-delay: 0.3s; }
+    .fade-up-d4 { animation-delay: 0.4s; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
+      </div>
+      <span>VITALYTICS</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="descript.html">How It Works</a>
+      <a href="assesment.html">Assessment</a>
+    </div>
+    <div class="nav-cta-wrap">
+      <a href="assesment.html" class="nav-cta">Start Assessment</a>
+    </div>
+    <button class="mobile-menu-btn" onclick="document.getElementById('mobileMenu').classList.toggle('open')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" class="active">Home</a>
+    <a href="descript.html">How It Works</a>
+    <a href="assesment.html">Assessment</a>
+    <button href="assesment.html" class="nav-cta" style="margin-top:0.5rem">Start Assessment</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg1"></div>
+  <div class="hero-bg2"></div>
+  <div class="container hero-content">
+    <div class="badge fade-up">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
+      Smart Multi-Disease Health Assessment
+    </div>
+    <h1 class="fade-up fade-up-d1">Welcome to <span class="gradient-text">VITALYTICS</span></h1>
+    <p class="fade-up fade-up-d2">A unified platform for early risk assessment of major diseases including COPD, Liver Disease, Pancreatic Cancer, Heart Disease, and Kidney Disease using machine learning.</p>
+    <div class="hero-buttons fade-up fade-up-d3">
+      <a href="assesment.html" class="btn-primary">
+        Get Started
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+      <a href="descript.html" class="btn-outline">Learn How It Works</a>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="container">
+    <div class="features-header fade-up">
+      <h2>Why Choose VITALYTICS?</h2>
+      <p>A single platform that combines multiple disease prediction models with a simple and guided assessment workflow.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card fade-up fade-up-d1">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3>Multi-Organ Assessment</h3>
+        <p>Assess health risks related to lungs, liver, pancreas, heart, and kidneys from one centralized system.</p>
+      </div>
+      <div class="feature-card fade-up fade-up-d2">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <h3>Machine Learning Driven</h3>
+        <p>Each assessment uses a trained ML model specific to the selected organ for accurate prediction.</p>
+      </div>
+      <div class="feature-card fade-up fade-up-d3">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 16l4-8 4 4 4-8"/></svg>
+        </div>
+        <h3>Clear Health Insights</h3>
+        <p>Get easy-to-understand prediction results along with a summarized health risk assessment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-box fade-up">
+      <h2>Ready to Get Your Personalised Health Analysis?</h2>
+      <p>Select an organ, enter health details, and receive an instant disease risk assessment.</p>
+      <a href="assesment.html" class="btn-secondary">
+        Start Assessment
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container footer-inner">
+    <a href="#" class="footer-logo">
+      <div class="footer-logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
+      </div>
+      <span>VITALYTICS</span>
+    </a>
+    <p class="footer-disclaimer">This tool is for educational and screening purposes only and is not a medical diagnosis. Always consult a healthcare professional for medical advice.</p>
+    <div class="footer-made">
+      <span>Made with</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+      <span>for better health</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Intersection Observer for fade-up animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.features .fade-up, .cta-section .fade-up').forEach(el => {
+    el.style.animationPlayState = 'paused';
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>
