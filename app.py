@@ -268,29 +268,28 @@ def predict_single(key, df):
 # PREPROCESSING – LIVER
 # ─────────────────────────────────────────────────────────────────────────────
 LIVER_GENDER = {'Male': 1, 'Female': 0}
-LIVER_FEATURES = ['Age of the patient','Gender of the patient','Total Bilirubin',
-                  'Direct Bilirubin',' Alkphos Alkaline Phosphotase',
-                  ' Sgpt Alamine Aminotransferase','Sgot Aspartate Aminotransferase',
-                  'Total Protiens',' ALB Albumin','A/G Ratio Albumin and Globulin Ratio']
+LIVER_FEATURES = ['Age of the patient', 'Gender of the patient', 'Total Bilirubin',
+                  'Direct Bilirubin', '\xa0Alkphos Alkaline Phosphotase',
+                  '\xa0Sgpt Alamine Aminotransferase', 'Sgot Aspartate Aminotransferase',
+                  'Total Protiens', '\xa0ALB Albumin', 'A/G Ratio Albumin and Globulin Ratio']
 
 def preprocess_liver(data: dict):
     print("✅ Liver Preprocess Starts")
     row = {
-        'Age of the patient':                   float(data['age']),
-        'Gender of the patient':                LIVER_GENDER.get(data['gender'].capitalize(), 0),
-        'Total Bilirubin':                      float(data['total_bilirubin']),
-        'Direct Bilirubin':                     float(data['direct_bilirubin']),
-        ' Alkphos Alkaline Phosphotase':        float(data['alkphos']),
-        ' Sgpt Alamine Aminotransferase':       float(data['sgpt']),
-        'Sgot Aspartate Aminotransferase':      float(data['sgot']),
-        'Total Protiens':                       float(data['total_proteins']),
-        ' ALB Albumin':                         float(data['albumin']),
-        'A/G Ratio Albumin and Globulin Ratio': float(data['ag_ratio']),
+        'Age of the patient':                    float(data['age']),
+        'Gender of the patient':                 LIVER_GENDER.get(data['gender'].capitalize(), 0),
+        'Total Bilirubin':                       float(data['total_bilirubin']),
+        'Direct Bilirubin':                      float(data['direct_bilirubin']),
+        '\xa0Alkphos Alkaline Phosphotase':      float(data['alkphos']),
+        '\xa0Sgpt Alamine Aminotransferase':     float(data['sgpt']),
+        'Sgot Aspartate Aminotransferase':       float(data['sgot']),
+        'Total Protiens':                        float(data['total_proteins']),
+        '\xa0ALB Albumin':                       float(data['albumin']),
+        'A/G Ratio Albumin and Globulin Ratio':  float(data['ag_ratio']),
     }
     df = pd.DataFrame([row])
-    df = df.reindex(columns=LIVER_FEATURES)                                    # ← NEW
-    num_cols = [c for c in df.columns if c != 'Gender of the patient']
-    df[num_cols] = models['liver']['scaler'].transform(df[num_cols])
+    df = df.reindex(columns=LIVER_FEATURES)
+    df[LIVER_FEATURES] = models['liver']['scaler'].transform(df[LIVER_FEATURES])  # scale ALL columns
     print("✅ Liver Preprocess Ends")
     return df
 
