@@ -82,7 +82,7 @@ SHEET_HEADERS = {
     'Liver':      ['ID','Timestamp','Age','Gender','TotalBilirubin',
                    'DirectBilirubin','AlkPhos','SGPT','SGOT','TotalProtiens',
                    'Albumin','AG_Ratio','Prediction','Confidence','Feedback'],
-    'COPD':       ['ID','Timestamp','Age','Gender','PackHistory','MWT1Best',
+    'COPD':       ['ID','Timestamp','Age','Gender','PackHistory','MWT1','MWT2','MWT1Best',
                    'FEV1','FEV1PRED','FVC','FVCPRED','CAT','HAD','SGRQ',
                    'AGEquartiles','Smoking','Diabetes','Muscular','Hypertension',
                    'AtrialFib','IHD','Prediction','Confidence','Feedback'],
@@ -473,7 +473,7 @@ def predict_copd_route():
         severity = COPD_SEVERITY.get(pred, f'Class {pred}')
         ts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         row = [ts, data.get('age'), data.get('gender'), data.get('pack_history'),
-               data.get('mwt1best'), data.get('fev1'), data.get('fev1pred'),
+               data.get('mwt1'), data.get('mwt2'), data.get('mwt1best'), data.get('fev1'), data.get('fev1pred'),
                data.get('fvc'), data.get('fvcpred'), data.get('cat'),
                data.get('had'), data.get('sgrq'), data.get('age_quartiles'),
                data.get('smoking'), data.get('diabetes'), data.get('muscular'),
