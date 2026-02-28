@@ -3,247 +3,558 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Liver Assessment - VITALYTICS</title>
+<title>Liver Disease Assessment - VITALYTICS</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --primary:hsl(187,72%,35%);--primary-light:hsl(187,72%,45%);
-  --bg:hsl(200,20%,98%);--card:#fff;--text:hsl(210,20%,15%);
-  --muted:hsl(210,10%,45%);--border:hsl(210,15%,90%);
-  --destructive:hsl(0,72%,51%);--success:hsl(142,60%,40%);
-  --warning:hsl(38,92%,50%);--radius:12px;
-  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04);
-}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
-a{text-decoration:none;color:inherit}
-.navbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
-.navbar .container{max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:64px}
-.logo{font-size:1.4rem;font-weight:700;color:var(--primary)}
-.nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{font-size:.9rem;font-weight:500;color:var(--muted)}
-.nav-links a.active{color:var(--primary)}
-.hero{background:linear-gradient(135deg,hsl(187,72%,95%),hsl(187,72%,90%));border-bottom:1px solid var(--border);padding:3rem 1.5rem;text-align:center}
-.hero h1{font-size:2rem;font-weight:700;margin-bottom:.5rem}
-.hero p{color:var(--muted)}
-.form-section{max-width:900px;margin:2rem auto;padding:0 1.5rem}
-.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem 2rem;margin-bottom:1.5rem;box-shadow:var(--shadow)}
-.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem}
-.section-icon{width:40px;height:40px;border-radius:10px;background:hsl(187,72%,92%);display:flex;align-items:center;justify-content:center}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.25rem}
-.form-group{display:flex;flex-direction:column;gap:.35rem}
-.form-group label{font-size:.85rem;font-weight:600}
-.req{color:var(--destructive)}
-.form-group input,.form-group select{height:40px;border:1px solid var(--border);border-radius:8px;padding:0 .75rem;font-size:.9rem}
-.submit-wrap{text-align:center;margin-bottom:2rem}
-.btn-primary{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 3rem;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer}
-.btn-primary:disabled{opacity:.6;cursor:not-allowed}
-.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
-@keyframes spin{to{transform:rotate(360deg)}}
-.disclaimer{display:flex;gap:.75rem;align-items:flex-start;background:hsl(210,15%,96%);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.5rem}
-.disclaimer svg{flex-shrink:0;width:20px;height:20px;stroke:var(--muted);margin-top:2px}
-.disclaimer p{font-size:.85rem;color:var(--muted)}
-/* RESULT CARD */
-.result-card{display:none;background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;text-align:center;box-shadow:var(--shadow)}
-.result-card.positive{border-color:var(--destructive)}
-.result-card.negative{border-color:var(--success)}
-.result-badge{display:inline-block;padding:.5rem 1.5rem;border-radius:999px;font-size:1.1rem;font-weight:700;margin-bottom:1rem}
-.result-badge.positive{background:hsl(0,72%,95%);color:var(--destructive)}
-.result-badge.negative{background:hsl(142,60%,95%);color:var(--success)}
-.conf-bar-wrap{margin:1rem auto;max-width:300px}
-.conf-label{font-size:.85rem;color:var(--muted);margin-bottom:.4rem}
-.conf-bar{height:10px;background:var(--border);border-radius:999px;overflow:hidden}
-.conf-fill{height:100%;background:var(--primary);border-radius:999px;transition:width .8s ease}
-/* FEEDBACK POPUP */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
-.overlay.open{display:flex}
-.popup{background:var(--card);border-radius:var(--radius);padding:2rem;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.15)}
-.popup h3{font-size:1.25rem;font-weight:600;margin-bottom:.75rem}
-.popup p{color:var(--muted);margin-bottom:1.5rem;font-size:.95rem}
-.popup-btns{display:flex;gap:1rem;justify-content:center}
-.btn-yes{padding:.6rem 2rem;background:var(--success);color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer}
-.btn-no{padding:.6rem 2rem;background:var(--destructive);color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer}
-.btn-skip{margin-top:.75rem;background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;text-decoration:underline}
-footer{border-top:1px solid var(--border);background:rgba(0,0,0,.85);color:#aaa;padding:2rem 1.5rem;text-align:center;font-size:.8rem}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: hsl(187, 72%, 35%);
+    --primary-light: hsl(187, 72%, 45%);
+    --primary-glow: hsl(187, 80%, 60%);
+    --bg: hsl(200, 20%, 98%);
+    --card: hsl(0, 0%, 100%);
+    --text: hsl(210, 20%, 15%);
+    --text-muted: hsl(210, 10%, 45%);
+    --border: hsl(210, 15%, 90%);
+    --destructive: hsl(0, 72%, 51%);
+    --success: hsl(142, 60%, 40%);
+    --warning: hsl(38, 92%, 50%);
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    --shadow-lg: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  a { text-decoration: none; color: inherit; }
+
+  /* Navbar */
+  .navbar { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+  .navbar .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { font-size: 1.4rem; font-weight: 700; color: var(--primary); letter-spacing: -0.5px; }
+  .logo span { color: var(--text); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-size: 0.9rem; font-weight: 500; color: var(--text-muted); transition: color 0.2s; }
+  .nav-links a:hover, .nav-links a.active { color: var(--primary); }
+  .menu-btn { display: none; background: none; border: none; cursor: pointer; }
+  .menu-btn svg { width: 24px; height: 24px; stroke: var(--text); }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; background: var(--card); border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; gap: 1rem; box-shadow: var(--shadow-lg); }
+    .nav-links.open { display: flex; }
+    .menu-btn { display: block; }
+  }
+
+  /* Hero */
+  .hero { background: linear-gradient(135deg, hsl(187,72%,95%), hsl(187,72%,90%)); border-bottom: 1px solid var(--border); padding: 3rem 1.5rem; text-align: center; }
+  .hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .hero p { color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+
+  /* Form */
+  .form-section { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+  .form-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem 2rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); opacity: 0; transform: translateY(20px); animation: fadeUp 0.5s ease forwards; }
+  .form-card:nth-child(2) { animation-delay: 0.1s; }
+  .form-card:nth-child(3) { animation-delay: 0.2s; }
+  .form-card:nth-child(4) { animation-delay: 0.3s; }
+  .form-card:nth-child(5) { animation-delay: 0.4s; }
+
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+  .section-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+  .section-icon { width: 40px; height: 40px; border-radius: 10px; background: hsl(187,72%,92%); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+  .section-header h2 { font-size: 1.15rem; font-weight: 600; }
+
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.25rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+  .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+  .form-group label .req { color: var(--destructive); }
+  .form-group .desc { font-size: 0.75rem; color: var(--text-muted); }
+
+  .form-group input, .form-group select {
+    height: 40px; border: 1px solid var(--border); border-radius: 8px; padding: 0 0.75rem;
+    font-size: 0.9rem; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px hsl(187,72%,35%,0.12); }
+  .form-group.error input, .form-group.error select { border-color: var(--destructive); }
+  .form-group .error-msg { font-size: 0.75rem; color: var(--destructive); min-height: 1em; }
+
+  /* Disclaimer */
+  .disclaimer { display: flex; gap: 0.75rem; align-items: flex-start; background: hsl(210,15%,96%); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .disclaimer svg { flex-shrink: 0; width: 20px; height: 20px; stroke: var(--text-muted); margin-top: 2px; }
+  .disclaimer p { font-size: 0.85rem; color: var(--text-muted); }
+
+  /* Submit */
+  .submit-wrap { text-align: center; margin-bottom: 2rem; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 3rem;
+    background: var(--primary); color: #fff; border: none; border-radius: 8px;
+    font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 20px hsl(187,72%,35%,0.3);
+  }
+  .btn-primary:hover { background: var(--primary-light); box-shadow: 0 0 30px hsl(187,72%,35%,0.45); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-primary .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Results section (below form) */
+  .results-section { max-width: 900px; margin: 0 auto 3rem; padding: 0 1.5rem; display: none; }
+  .results-section.visible { display: block; }
+  .result-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); animation: fadeUp 0.5s ease forwards; }
+  .result-header { padding: 2rem; text-align: center; color: #fff; }
+  .result-header.positive { background: linear-gradient(135deg, hsl(0,60%,50%), hsl(20,80%,50%)); }
+  .result-header.negative { background: linear-gradient(135deg, var(--primary), hsl(160,60%,40%)); }
+  .result-header h2 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+  .result-header p { opacity: 0.9; }
+
+  .result-body { padding: 2rem; }
+  .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
+  .stat-card .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+  .stat-card .stat-value { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
+  .stat-card .stat-value.pos { color: var(--destructive); }
+  .stat-card .stat-value.neg { color: var(--success); }
+
+  .detail-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+  .detail-table th, .detail-table td { padding: 0.6rem 1rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+  .detail-table th { background: var(--bg); font-weight: 600; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .detail-table tr:last-child td { border-bottom: none; }
+  .detail-table td:last-child { font-weight: 600; }
+  .detail-table .flag { color: var(--destructive); font-size: 0.7rem; margin-left: 4px; }
+
+  .obs-list { list-style: none; margin-top: 1rem; }
+  .obs-list li { padding: 0.5rem 0 0.5rem 1.5rem; position: relative; font-size: 0.9rem; color: var(--text-muted); }
+  .obs-list li::before { content: '⚠'; position: absolute; left: 0; }
+
+  .rec-list { list-style: none; margin-top: 1rem; }
+  .rec-list li { padding: 0.5rem 0 0.5rem 1.5rem; position: relative; font-size: 0.9rem; color: var(--text-muted); }
+  .rec-list li::before { content: '✓'; position: absolute; left: 0; color: var(--success); font-weight: 700; }
+
+  .sub-heading { font-size: 1rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.25rem; }
+
+  /* Inline result panel (inside form area, replaces old result-card) */
+  #result-panel { display:none; margin-top:1.5rem; animation: fadeUp 0.4s ease; }
+
+  /* Footer */
+  .footer { background: var(--text); color: hsl(210,10%,70%); padding: 2rem 1.5rem; text-align: center; font-size: 0.8rem; }
+  .footer a { color: var(--primary-glow); }
 </style>
 </head>
 <body>
 
+<!-- Navbar -->
 <nav class="navbar">
   <div class="container">
-    <a href="index.html" class="logo">VITALYTICS</a>
-    <ul class="nav-links">
+    <a href="index.html" class="logo">Vital<span>ytics</span></a>
+    <ul class="nav-links" id="navLinks">
       <li><a href="index.html">Home</a></li>
       <li><a href="assesment.html" class="active">Assessment</a></li>
       <li><a href="descript.html">How It Works</a></li>
     </ul>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
   </div>
 </nav>
 
+<!-- Hero -->
 <section class="hero">
-  <h1>🫀 Liver Disease Prediction</h1>
-  <p>Enter biochemical markers and clinical indicators for liver health evaluation.</p>
+  <h1>🫀 Liver Disease Assessment</h1>
+  <p>Enter biochemical and clinical markers for liver health evaluation. Fields marked with <span style="color:var(--destructive)">*</span> are required.</p>
 </section>
 
+<!-- Form -->
 <div class="form-section">
+  <form id="liverForm" novalidate>
 
-  <!-- RESULT CARD -->
-  <div class="result-card" id="resultCard">
-    <div class="result-badge" id="resultBadge"></div>
-    <p id="resultMsg" style="color:var(--muted);font-size:.95rem;margin-bottom:1rem"></p>
-    <div class="conf-bar-wrap">
-      <div class="conf-label" id="confLabel"></div>
-      <div class="conf-bar"><div class="conf-fill" id="confFill" style="width:0%"></div></div>
-    </div>
-  </div>
-
-  <form id="liverForm">
-
+    <!-- Patient Demographics -->
     <div class="form-card">
-      <div class="section-header"><div class="section-icon">👤</div><h2>Patient Info</h2></div>
+      <div class="section-header">
+        <div class="section-icon">👤</div>
+        <h2>Patient Demographics</h2>
+      </div>
       <div class="form-grid">
-        <div class="form-group"><label>Age <span class="req">*</span></label><input type="number" id="age" min="1" max="120" required></div>
-        <div class="form-group"><label>Gender <span class="req">*</span></label>
-          <select id="gender" required><option value="">Select</option><option>Male</option><option>Female</option></select></div>
+        <div class="form-group" data-field="age">
+          <label>Age <span class="req">*</span></label>
+          <input type="number" id="age" placeholder="e.g., 45" min="1" max="120" step="1">
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="gender">
+          <label>Gender <span class="req">*</span></label>
+          <select id="gender">
+            <option value="">Select gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
       </div>
     </div>
 
+    <!-- Bilirubin Levels -->
     <div class="form-card">
-      <div class="section-header"><div class="section-icon">🧪</div><h2>Bilirubin Levels</h2></div>
+      <div class="section-header">
+        <div class="section-icon">🧪</div>
+        <h2>Bilirubin Levels</h2>
+      </div>
       <div class="form-grid">
-        <div class="form-group"><label>Total Bilirubin (mg/dL) <span class="req">*</span></label><input type="number" id="total_bilirubin" step="0.1" min="0" required></div>
-        <div class="form-group"><label>Direct Bilirubin (mg/dL) <span class="req">*</span></label><input type="number" id="direct_bilirubin" step="0.1" min="0" required></div>
+        <div class="form-group" data-field="total_bilirubin">
+          <label>Total Bilirubin (mg/dL) <span class="req">*</span></label>
+          <input type="number" id="total_bilirubin" placeholder="e.g., 0.9" step="0.1" min="0">
+          <span class="desc">Normal: 0.2 – 1.2 mg/dL</span>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="direct_bilirubin">
+          <label>Direct Bilirubin (mg/dL) <span class="req">*</span></label>
+          <input type="number" id="direct_bilirubin" placeholder="e.g., 0.2" step="0.1" min="0">
+          <span class="desc">Normal: 0.0 – 0.3 mg/dL</span>
+          <span class="error-msg"></span>
+        </div>
       </div>
     </div>
 
+    <!-- Enzyme Levels -->
     <div class="form-card">
-      <div class="section-header"><div class="section-icon">⚗️</div><h2>Enzyme Levels</h2></div>
+      <div class="section-header">
+        <div class="section-icon">⚗️</div>
+        <h2>Liver Enzyme Levels</h2>
+      </div>
       <div class="form-grid">
-        <div class="form-group"><label>Alkaline Phosphotase (U/L) <span class="req">*</span></label><input type="number" id="alkphos" step="1" min="0" required></div>
-        <div class="form-group"><label>SGPT / ALT (U/L) <span class="req">*</span></label><input type="number" id="sgpt" step="1" min="0" required></div>
-        <div class="form-group"><label>SGOT / AST (U/L) <span class="req">*</span></label><input type="number" id="sgot" step="1" min="0" required></div>
+        <div class="form-group" data-field="alkphos">
+          <label>Alkaline Phosphatase / AlkPhos (U/L) <span class="req">*</span></label>
+          <input type="number" id="alkphos" placeholder="e.g., 90" step="1" min="0">
+          <span class="desc">Normal: 44 – 147 U/L</span>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="sgpt">
+          <label>SGPT / ALT (U/L) <span class="req">*</span></label>
+          <input type="number" id="sgpt" placeholder="e.g., 30" step="1" min="0">
+          <span class="desc">Normal: 7 – 56 U/L</span>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="sgot">
+          <label>SGOT / AST (U/L) <span class="req">*</span></label>
+          <input type="number" id="sgot" placeholder="e.g., 25" step="1" min="0">
+          <span class="desc">Normal: 10 – 40 U/L</span>
+          <span class="error-msg"></span>
+        </div>
       </div>
     </div>
 
+    <!-- Protein Markers -->
     <div class="form-card">
-      <div class="section-header"><div class="section-icon">🔬</div><h2>Protein Markers</h2></div>
+      <div class="section-header">
+        <div class="section-icon">🔬</div>
+        <h2>Protein Markers</h2>
+      </div>
       <div class="form-grid">
-        <div class="form-group"><label>Total Proteins (g/dL) <span class="req">*</span></label><input type="number" id="total_proteins" step="0.1" min="0" required></div>
-        <div class="form-group"><label>Albumin (g/dL) <span class="req">*</span></label><input type="number" id="albumin" step="0.1" min="0" required></div>
-        <div class="form-group"><label>A/G Ratio <span class="req">*</span></label><input type="number" id="ag_ratio" step="0.01" min="0" required></div>
+        <div class="form-group" data-field="total_proteins">
+          <label>Total Proteins (g/dL) <span class="req">*</span></label>
+          <input type="number" id="total_proteins" placeholder="e.g., 7.0" step="0.1" min="0">
+          <span class="desc">Normal: 6.3 – 8.2 g/dL</span>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="albumin">
+          <label>Albumin (g/dL) <span class="req">*</span></label>
+          <input type="number" id="albumin" placeholder="e.g., 4.0" step="0.1" min="0">
+          <span class="desc">Normal: 3.5 – 5.0 g/dL</span>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="ag_ratio">
+          <label>A/G Ratio <span class="req">*</span></label>
+          <input type="number" id="ag_ratio" placeholder="e.g., 1.2" step="0.01" min="0">
+          <span class="desc">Normal: 1.0 – 2.5</span>
+          <span class="error-msg"></span>
+        </div>
       </div>
     </div>
 
+    <!-- Submit -->
     <div class="submit-wrap">
       <button type="submit" class="btn-primary" id="submitBtn">
         Analyze Liver Health
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        <div class="spinner" id="spinner"></div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
     </div>
 
-    <div class="disclaimer">
-      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg>
-      <p>This tool is for educational and screening purposes only. Always consult a healthcare professional for medical advice.</p>
+    <!-- Inline Result + Feedback Panel -->
+    <div id="result-panel" style="display:none; margin-top:1.5rem; animation:fadeUp 0.4s ease">
+      <div class="form-card" style="margin-bottom:0">
+        <div class="section-header">
+          <div class="section-icon">📋</div>
+          <h2>Diagnostic Result</h2>
+        </div>
+
+        <!-- Result box -->
+        <div id="result-box" style="border-radius:10px;padding:1.5rem;text-align:center;border:2px solid #ccc;margin-bottom:1.5rem">
+          <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);margin-bottom:.4rem">Liver Disease Diagnosis</div>
+          <div id="result-value" style="font-size:2.4rem;font-weight:700">—</div>
+          <div id="conf-wrap" style="margin-top:.8rem;max-width:300px;margin-left:auto;margin-right:auto">
+            <div id="conf-text" style="font-size:.8rem;color:var(--text-muted);margin-bottom:.4rem"></div>
+            <div style="height:8px;background:rgba(0,0,0,.08);border-radius:4px;overflow:hidden">
+              <div id="conf-fill" style="height:100%;width:0%;border-radius:4px;transition:width 1s ease;background:var(--primary)"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submitted values table -->
+        <h3 class="sub-heading">Submitted Values</h3>
+        <table class="detail-table">
+          <thead><tr><th>Parameter</th><th>Value</th><th>Reference Range</th></tr></thead>
+          <tbody id="detailBody"></tbody>
+        </table>
+
+        <!-- Observations -->
+        <h3 class="sub-heading">Observations</h3>
+        <ul class="obs-list" id="obsList"></ul>
+
+        <!-- Recommendations -->
+        <h3 class="sub-heading">Recommendations</h3>
+        <ul class="rec-list" id="recList"></ul>
+
+        <!-- Feedback inline -->
+        <div id="feedback-section" style="text-align:center;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+          <div style="font-size:.9rem;color:var(--text-muted);margin-bottom:1rem">
+            <strong style="color:var(--text)">Is this diagnosis correct?</strong><br/>
+            Your feedback helps improve our model.
+          </div>
+          <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+            <button id="fbYes" type="button" onclick="sendFeedback('Yes')" style="padding:.6rem 1.8rem;border-radius:50px;font-size:.875rem;font-weight:600;cursor:pointer;border:2px solid var(--success);color:var(--success);background:transparent;transition:all .2s">✓ Yes, Correct</button>
+            <button id="fbNo"  type="button" onclick="sendFeedback('No')"  style="padding:.6rem 1.8rem;border-radius:50px;font-size:.875rem;font-weight:600;cursor:pointer;border:2px solid var(--destructive);color:var(--destructive);background:transparent;transition:all .2s">✗ No, Incorrect</button>
+            <button id="fbSkip" type="button" onclick="sendFeedback(null)"  style="padding:.6rem 1.8rem;border-radius:50px;font-size:.875rem;font-weight:600;cursor:pointer;border:2px solid #9ca3af;color:#9ca3af;background:transparent;transition:all .2s">Skip</button>
+          </div>
+          <div id="feedback-done" style="display:none;font-size:.9rem;color:var(--primary);margin-top:.75rem"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer" style="margin-top:1.5rem">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p>This tool is for educational and screening purposes only and is not a medical diagnosis. Always consult a qualified hepatologist or healthcare professional for medical advice.</p>
     </div>
   </form>
 </div>
 
-<!-- FEEDBACK POPUP -->
-<div class="overlay" id="overlay">
-  <div class="popup">
-    <h3>Was this diagnosis accurate?</h3>
-    <p>Your feedback helps us improve the model. Do you agree with the prediction?</p>
-    <div class="popup-btns">
-      <button class="btn-yes" id="btnYes">✅ Yes, Correct</button>
-      <button class="btn-no"  id="btnNo">❌ No, Incorrect</button>
-    </div>
-    <br>
-    <button class="btn-skip" id="btnSkip">Skip feedback</button>
-  </div>
-</div>
-
-<footer><p>© 2026 VITALYTICS. Educational purposes only. Not a substitute for medical advice.</p></footer>
+<!-- Footer -->
+<footer class="footer">
+  <p>&copy; 2026 VITALYTICS. For educational purposes only. Not a substitute for professional medical advice.</p>
+</footer>
 
 <script>
-const API = '';  // same-origin; if different host: 'https://your-backend.com'
+document.getElementById('menuBtn').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+const API = '';   // same-origin; change to 'https://your-backend.com' if needed
 let lastResult = null;
 
+// ── Reference ranges for observations ──────────────────────────────────────
+const REFS = {
+  total_bilirubin:  { min: 0.2,  max: 1.2,  unit: 'mg/dL', label: 'Total Bilirubin' },
+  direct_bilirubin: { min: 0.0,  max: 0.3,  unit: 'mg/dL', label: 'Direct Bilirubin' },
+  alkphos:          { min: 44,   max: 147,   unit: 'U/L',   label: 'AlkPhos' },
+  sgpt:             { min: 7,    max: 56,    unit: 'U/L',   label: 'SGPT / ALT' },
+  sgot:             { min: 10,   max: 40,    unit: 'U/L',   label: 'SGOT / AST' },
+  total_proteins:   { min: 6.3,  max: 8.2,  unit: 'g/dL',  label: 'Total Proteins' },
+  albumin:          { min: 3.5,  max: 5.0,  unit: 'g/dL',  label: 'Albumin' },
+  ag_ratio:         { min: 1.0,  max: 2.5,  unit: '',       label: 'A/G Ratio' },
+};
+
+// ── Form submit ─────────────────────────────────────────────────────────────
 document.getElementById('liverForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const btn = document.getElementById('submitBtn');
-  const spin = document.getElementById('spinner');
-  btn.disabled = true; spin.style.display = 'block';
+  if (!validateForm()) return;
 
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = 'Analyzing... <div style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle"></div>';
+
+  const g = id => document.getElementById(id);
   const payload = {
-    age:              document.getElementById('age').value,
-    gender:           document.getElementById('gender').value,
-    total_bilirubin:  document.getElementById('total_bilirubin').value,
-    direct_bilirubin: document.getElementById('direct_bilirubin').value,
-    alkphos:          document.getElementById('alkphos').value,
-    sgpt:             document.getElementById('sgpt').value,
-    sgot:             document.getElementById('sgot').value,
-    total_proteins:   document.getElementById('total_proteins').value,
-    albumin:          document.getElementById('albumin').value,
-    ag_ratio:         document.getElementById('ag_ratio').value,
+    age:              g('age').value,
+    gender:           g('gender').value,
+    total_bilirubin:  g('total_bilirubin').value,
+    direct_bilirubin: g('direct_bilirubin').value,
+    alkphos:          g('alkphos').value,
+    sgpt:             g('sgpt').value,
+    sgot:             g('sgot').value,
+    total_proteins:   g('total_proteins').value,
+    albumin:          g('albumin').value,
+    ag_ratio:         g('ag_ratio').value,
   };
 
   try {
     const res  = await fetch(`${API}/predict/liver`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
 
     lastResult = data;
-    showResult(data);
-    // Show feedback popup after short delay
-    setTimeout(() => document.getElementById('overlay').classList.add('open'), 1500);
+    showLiverResult(data, payload);
   } catch (err) {
-    alert('Error: ' + err.message);
+    alert('Prediction error: ' + err.message);
   } finally {
-    btn.disabled = false; spin.style.display = 'none';
+    btn.disabled = false;
+    btn.innerHTML = 'Analyze Liver Health <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
   }
 });
 
-function showResult(data) {
-  const card  = document.getElementById('resultCard');
-  const badge = document.getElementById('resultBadge');
-  const msg   = document.getElementById('resultMsg');
-  const fill  = document.getElementById('confFill');
-  const lbl   = document.getElementById('confLabel');
-
-  const isPos = data.prediction.includes('DISEASE');
-  card.style.display = 'block';
-  card.className = 'result-card ' + (isPos ? 'positive' : 'negative');
-  badge.className = 'result-badge ' + (isPos ? 'positive' : 'negative');
-  badge.textContent = data.prediction;
-
-  msg.textContent = isPos
-    ? 'Indicators suggest possible liver disease. Please consult a hepatologist.'
-    : 'No significant liver disease indicators detected.';
-
-  if (data.confidence_pct != null) {
-    lbl.textContent = `Model confidence: ${data.confidence_pct}%`;
-    fill.style.width = data.confidence_pct + '%';
-  }
-  card.scrollIntoView({ behavior:'smooth', block:'center' });
+// ── Validation ──────────────────────────────────────────────────────────────
+function validateForm() {
+  const fields = ['age','gender','total_bilirubin','direct_bilirubin','alkphos','sgpt','sgot','total_proteins','albumin','ag_ratio'];
+  let ok = true;
+  fields.forEach(id => {
+    const el  = document.getElementById(id);
+    const grp = el.closest('.form-group');
+    const msg = grp.querySelector('.error-msg');
+    if (!el.value || el.value === '') {
+      grp.classList.add('error');
+      if (msg) msg.textContent = 'This field is required.';
+      ok = false;
+    } else {
+      grp.classList.remove('error');
+      if (msg) msg.textContent = '';
+    }
+  });
+  return ok;
 }
 
+// ── Show result ─────────────────────────────────────────────────────────────
+function showLiverResult(data, payload) {
+  const panel    = document.getElementById('result-panel');
+  const box      = document.getElementById('result-box');
+  const val      = document.getElementById('result-value');
+  const confText = document.getElementById('conf-text');
+  const confFill = document.getElementById('conf-fill');
+  const fbDone   = document.getElementById('feedback-done');
+
+  const isPos = data.prediction === 'LIVER DISEASE';
+  box.style.borderColor = isPos ? 'var(--destructive)' : 'var(--success)';
+  box.style.background  = isPos ? 'hsl(0,72%,97%)'    : 'hsl(142,60%,97%)';
+  val.textContent = isPos ? 'LIVER DISEASE' : 'NO LIVER DISEASE';
+  val.style.color = isPos ? 'var(--destructive)' : 'var(--success)';
+
+  const pct = data.confidence_pct != null ? data.confidence_pct
+            : data.confidence      != null ? Math.round(data.confidence * 100)
+            : null;
+  confText.textContent = pct != null ? `Confidence: ${pct}%` : '';
+  confFill.style.background = isPos ? 'var(--destructive)' : 'var(--success)';
+  setTimeout(() => confFill.style.width = (pct || 80) + '%', 100);
+
+  // Populate detail table
+  buildDetailTable(payload);
+
+  // Observations & Recommendations
+  buildObservations(payload, isPos);
+
+  // Reset feedback
+  ['fbYes','fbNo','fbSkip'].forEach(id => document.getElementById(id).disabled = false);
+  fbDone.style.display = 'none';
+
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function buildDetailTable(payload) {
+  const tbody = document.getElementById('detailBody');
+  tbody.innerHTML = '';
+
+  const rows = [
+    { label: 'Age',              key: null,              val: payload.age + ' yrs',     ref: '—' },
+    { label: 'Gender',           key: null,              val: payload.gender,            ref: '—' },
+    { label: 'Total Bilirubin',  key: 'total_bilirubin', val: payload.total_bilirubin + ' mg/dL', ref: '0.2–1.2 mg/dL' },
+    { label: 'Direct Bilirubin', key: 'direct_bilirubin',val: payload.direct_bilirubin + ' mg/dL', ref: '0.0–0.3 mg/dL' },
+    { label: 'AlkPhos',          key: 'alkphos',         val: payload.alkphos + ' U/L', ref: '44–147 U/L' },
+    { label: 'SGPT / ALT',       key: 'sgpt',            val: payload.sgpt + ' U/L',    ref: '7–56 U/L' },
+    { label: 'SGOT / AST',       key: 'sgot',            val: payload.sgot + ' U/L',    ref: '10–40 U/L' },
+    { label: 'Total Proteins',   key: 'total_proteins',  val: payload.total_proteins + ' g/dL', ref: '6.3–8.2 g/dL' },
+    { label: 'Albumin',          key: 'albumin',         val: payload.albumin + ' g/dL', ref: '3.5–5.0 g/dL' },
+    { label: 'A/G Ratio',        key: 'ag_ratio',        val: payload.ag_ratio,          ref: '1.0–2.5' },
+  ];
+
+  rows.forEach(r => {
+    const abnormal = r.key && isAbnormal(r.key, parseFloat(payload[r.key]));
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.label}${abnormal ? '<span class="flag">⚠ HIGH</span>' : ''}</td><td style="color:${abnormal ? 'var(--destructive)' : 'inherit'}">${r.val}</td><td style="color:var(--text-muted);font-weight:400">${r.ref}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function isAbnormal(key, value) {
+  const ref = REFS[key];
+  if (!ref) return false;
+  return value < ref.min || value > ref.max;
+}
+
+function buildObservations(payload, isPos) {
+  const obsList  = document.getElementById('obsList');
+  const recList  = document.getElementById('recList');
+  obsList.innerHTML = '';
+  recList.innerHTML = '';
+
+  const abnormals = Object.keys(REFS).filter(k => isAbnormal(k, parseFloat(payload[k])));
+
+  if (abnormals.length === 0 && !isPos) {
+    addItem(obsList, 'All biochemical markers are within normal reference ranges.');
+  } else {
+    abnormals.forEach(k => {
+      const ref = REFS[k];
+      const v   = parseFloat(payload[k]);
+      const dir = v > ref.max ? 'elevated' : 'below normal';
+      addItem(obsList, `${ref.label} is ${dir} (${v} ${ref.unit}; normal ${ref.min}–${ref.max} ${ref.unit}).`);
+    });
+    if (isPos && abnormals.length === 0) {
+      addItem(obsList, 'Model identified patterns associated with liver disease despite values appearing within reference ranges.');
+    }
+  }
+
+  // Recommendations
+  if (isPos) {
+    addItem(recList, 'Consult a hepatologist or gastroenterologist for a comprehensive liver evaluation.');
+    addItem(recList, 'Request additional tests: LFT panel, ultrasound abdomen, viral hepatitis markers (HBsAg, Anti-HCV).');
+    addItem(recList, 'Avoid alcohol, hepatotoxic medications, and over-the-counter NSAIDs without medical guidance.');
+    addItem(recList, 'Maintain a liver-friendly diet rich in vegetables, lean protein, and low in saturated fats.');
+    addItem(recList, 'Monitor symptoms such as jaundice, fatigue, abdominal pain, or dark urine and report to your doctor.');
+  } else {
+    addItem(recList, 'Maintain regular annual health checkups including liver function tests.');
+    addItem(recList, 'Stay hydrated, maintain a healthy body weight, and follow a balanced diet.');
+    addItem(recList, 'Limit alcohol consumption and avoid self-medication with hepatotoxic drugs.');
+    addItem(recList, 'Vaccinate against Hepatitis A and B if not already immunized.');
+    if (abnormals.length > 0) {
+      addItem(recList, 'Some values are outside the reference range — follow up with your physician for interpretation.');
+    }
+  }
+}
+
+function addItem(ul, text) {
+  const li = document.createElement('li');
+  li.textContent = text;
+  ul.appendChild(li);
+}
+
+// ── Feedback ────────────────────────────────────────────────────────────────
 async function sendFeedback(val) {
+  ['fbYes','fbNo','fbSkip'].forEach(id => document.getElementById(id).disabled = true);
+  const done = document.getElementById('feedback-done');
+
+  if (val === null) {
+    done.textContent = 'Response saved without feedback.';
+    done.style.display = 'block';
+    return;
+  }
   if (!lastResult) return;
-  document.getElementById('overlay').classList.remove('open');
   try {
     await fetch(`${API}/feedback`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: lastResult.id, tab: lastResult.tab, feedback: val })
     });
   } catch(e) { console.warn('Feedback error', e); }
+  done.textContent = '✓ Thank you for your feedback!';
+  done.style.display = 'block';
 }
-
-document.getElementById('btnYes').onclick  = () => sendFeedback('yes');
-document.getElementById('btnNo').onclick   = () => sendFeedback('no');
-document.getElementById('btnSkip').onclick = () => document.getElementById('overlay').classList.remove('open');
 </script>
 </body>
 </html>
