@@ -276,18 +276,19 @@ LIVER_FEATURES = ['Age of the patient','Gender of the patient','Total Bilirubin'
 def preprocess_liver(data: dict):
     print("✅ Liver Preprocess Starts")
     row = {
-        'Age of the patient':                    float(data['age']),
-        'Gender of the patient':                 LIVER_GENDER.get(data['gender'], 0),
-        'Total Bilirubin':                       float(data['total_bilirubin']),
-        'Direct Bilirubin':                      float(data['direct_bilirubin']),
-        ' Alkphos Alkaline Phosphotase':         float(data['alkphos']),
-        ' Sgpt Alamine Aminotransferase':        float(data['sgpt']),
-        'Sgot Aspartate Aminotransferase':       float(data['sgot']),
-        'Total Protiens':                        float(data['total_proteins']),
-        ' ALB Albumin':                          float(data['albumin']),
-        'A/G Ratio Albumin and Globulin Ratio':  float(data['ag_ratio']),
+        'Age of the patient':                   float(data['age']),
+        'Gender of the patient':                LIVER_GENDER.get(data['gender'].capitalize(), 0),
+        'Total Bilirubin':                      float(data['total_bilirubin']),
+        'Direct Bilirubin':                     float(data['direct_bilirubin']),
+        ' Alkphos Alkaline Phosphotase':        float(data['alkphos']),
+        ' Sgpt Alamine Aminotransferase':       float(data['sgpt']),
+        'Sgot Aspartate Aminotransferase':      float(data['sgot']),
+        'Total Protiens':                       float(data['total_proteins']),
+        ' ALB Albumin':                         float(data['albumin']),
+        'A/G Ratio Albumin and Globulin Ratio': float(data['ag_ratio']),
     }
     df = pd.DataFrame([row])
+    df = df.reindex(columns=LIVER_FEATURES)                                    # ← NEW
     num_cols = [c for c in df.columns if c != 'Gender of the patient']
     df[num_cols] = models['liver']['scaler'].transform(df[num_cols])
     print("✅ Liver Preprocess Ends")
