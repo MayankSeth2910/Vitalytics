@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pancreatic Cancer Report - Vitanalytics</title>
+
+<style>
+/* ===== ORIGINAL CSS – UNCHANGED ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: hsl(187, 72%, 35%);
+  --primary-light: hsl(187, 72%, 45%);
+  --primary-glow: hsl(187, 80%, 60%);
+  --bg: hsl(200, 20%, 98%);
+  --card: hsl(0, 0%, 100%);
+  --text: hsl(210, 20%, 15%);
+  --text-muted: hsl(210, 10%, 45%);
+  --border: hsl(210, 15%, 90%);
+  --destructive: hsl(0, 72%, 51%);
+  --success: hsl(142, 60%, 40%);
+  --warning: hsl(38, 92%, 50%);
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+  --shadow-lg: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* Navbar */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.navbar .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+.logo span { color: var(--text); }
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.nav-links a.active { color: var(--primary); }
+.menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.menu-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--text);
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: var(--card);
+    padding: 1rem 1.5rem;
+    box-shadow: var(--shadow-lg);
+  }
+  .nav-links.open { display: flex; }
+  .menu-btn { display: block; }
+}
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, hsl(187,72%,95%), hsl(187,72%,90%));
+  border-bottom: 1px solid var(--border);
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+.hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+.hero p { color: var(--text-muted); }
+
+/* Form */
+.form-section { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+.form-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.section-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: hsl(187,72%,92%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
+  gap: 1.25rem;
+}
+.form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+.form-group label { font-size: 0.85rem; font-weight: 600; }
+.req { color: var(--destructive); }
+.form-group input,
+.form-group select {
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0 0.75rem;
+}
+
+/* Submit */
+.submit-wrap { text-align: center; margin-bottom: 2rem; }
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 3rem;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-primary .spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+/* Disclaimer */
+  .disclaimer { display: flex; gap: 0.75rem; align-items: flex-start; background: hsl(210,15%,96%); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .disclaimer svg { flex-shrink: 0; width: 20px; height: 20px; stroke: var(--text-muted); margin-top: 2px; }
+  .disclaimer p { font-size: 0.85rem; color: var(--text-muted); }
+/* Footer */
+.footer {
+  background: var(--text);
+  color: hsl(210,10%,70%);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR (UNCHANGED) -->
+<nav class="navbar">
+  <div class="container">
+    <a href="index.html" class="logo">Vital<span>ytics</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="assesment.html" class="active">Assessment</a></li>
+      <li><a href="descript.html">How It Works</a></li>
+    </ul>
+    <button class="menu-btn" id="menuBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Pancreatic Cancer Prediction Report</h1>
+  <p>Enter patient clinical and lifestyle details for pancreatic cancer risk assessment.</p>
+</section>
+
+<!-- FORM -->
+<div class="form-section">
+<form id="urinalysisForm">
+
+<!-- Patient Demographics -->
+<div class="form-card">
+  <div class="section-header">
+    <div class="section-icon">👤</div>
+    <h2>Patient Demographics</h2>
+  </div>
+  <div class="form-grid">
+    <div class="form-group"><label>Country <span class="req">*</span></label><input id="country" placeholder="e.g. India"></div>
+    <div class="form-group"><label>Age <span class="req">*</span></label><input id="age" type="number" required></div>
+    <div class="form-group"><label>Gender <span class="req">*</span></label>
+      <select id="gender" required><option value="">Select</option><option>Female</option><option>Male</option></select>
+    </div>
+  </div>
+</div>
+
+<!-- Medical History -->
+<div class="form-card">
+  <div class="section-header">
+    <div class="section-icon">🩺</div>
+    <h2>Medical History</h2>
+  </div>
+  <div class="form-grid">
+    <div class="form-group"><label>Smoking History *</label><select id="smoking"><option value="">Select</option><option>No</option><option>Yes</option></select></div>
+    <div class="form-group"><label>Obesity *</label><select id="obesity"><option value="">Select</option><option>No</option><option>Yes</option></select></div>
+    <div class="form-group"><label>Diabetes *</label><select id="diabetes"><option value="">Select</option><option>No</option><option>Yes</option></select></div>
+    <div class="form-group"><label>Chronic Pancreatitis *</label><select id="chronic_pancreatitis"><option value="">Select</option><option>No</option><option>Yes</option></select></div>
+    <div class="form-group"><label>Family History *</label><select id="family_history"><option value="">Select</option><option>No</option><option>Yes</option></select></div>
+    <div class="form-group"><label>Hereditary Condition *</label><select id="hereditary_condition"><option value="">Select</option><option>No</option><option>Yes</option></select></div>
+  </div>
+</div>
+
+<!-- Symptoms -->
+<div class="form-card">
+  <div class="section-header">
+    <div class="section-icon">⚠️</div>
+    <h2>Symptoms</h2>
+  </div>
+  <div class="form-grid">
+    <div class="form-group"><label>Jaundice *</label><select id="jaundice"><option value="">Select</option><option>No</option><option>Yes</option></select></div>
+    <div class="form-group"><label>Abdominal Discomfort *</label><select id="abdominal_discomfort"><option value="">Select</option><option>No</option><option>Yes</option></select></div>
+    <div class="form-group"><label>Back Pain *</label><select id="back_pain"><option value="">Select</option><option>No</option><option>Yes</option></select></div>
+    <div class="form-group"><label>Weight Loss *</label><select id="weight_loss"><option value="">Select</option><option>No</option><option>Yes</option></select></div>
+  </div>
+</div>
+
+<!-- Diagnosis & Lifestyle -->
+<div class="form-card">
+  <div class="section-header">
+    <div class="section-icon">🏥</div>
+    <h2>Diagnosis & Lifestyle</h2>
+  </div>
+  <div class="form-grid">
+    <div class="form-group"><label>Stage at Diagnosis *</label>
+      <select id="stage_at_diagnosis"><option value="">Select</option><option>Stage I</option><option>Stage II</option><option>Stage III</option><option>Stage IV</option></select>
+    </div>
+    <div class="form-group"><label>Survival Time (Months) *</label><input id="survival_time" type="number" step="0.1"></div>
+    <div class="form-group"><label>Treatment Type *</label>
+      <select id="treatment_type"><option value="">Select</option><option>Surgery</option><option>Chemotherapy</option><option>Radiation</option></select>
+    </div>
+    <div class="form-group"><label>Survival Status *</label><select id="survival_status"><option value="">Select</option><option>No</option><option>Yes</option></select></div>
+  </div>
+</div>
+
+<!-- Submit button (UNCHANGED) -->
+<div class="submit-wrap">
+  <button type="submit" class="btn-primary" id="submitBtn">
+    Analyze Health
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="5" y1="12" x2="19" y2="12"/>
+      <polyline points="12 5 19 12 12 19"/>
+    </svg>
+  </button>
+</div>
+<!-- Disclaimer -->
+    <div class="disclaimer">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg>
+      <p>This tool is for educational and screening purposes only and is not a medical diagnosis. Always consult a healthcare professional for medical advice.</p>
+    </div>
+</form>
+</div>
+
+<footer class="footer">
+  <p>© 2026 Vitanalytics. Educational purposes only.</p>
+</footer>
+
+
+
+
+<!-- FEEDBACK POPUP -->
+<div id="feedbackOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:12px;padding:2rem;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.15)">
+    <h3 style="font-size:1.25rem;font-weight:600;margin-bottom:.75rem">Was this diagnosis accurate?</h3>
+    <p style="color:#6b7280;margin-bottom:1.5rem;font-size:.95rem">Your feedback helps improve our models.</p>
+    <div style="display:flex;gap:1rem;justify-content:center">
+      <button id="fbYes" style="padding:.6rem 2rem;background:#16a34a;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer">Yes</button>
+      <button id="fbNo" style="padding:.6rem 2rem;background:#ef4444;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer">No</button>
+    </div>
+    <br><button id="fbSkip" style="background:none;border:none;color:#9ca3af;font-size:.85rem;cursor:pointer;text-decoration:underline">Skip</button>
+  </div>
+</div>
+<style>#feedbackOverlay.open{display:flex!important}</style>
+<script>
+document.getElementById('menuBtn').addEventListener('click',()=>{document.getElementById('navLinks').classList.toggle('open');});
+const API='';let lastResult=null;
+document.getElementById('urinalysisForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();const btn=document.getElementById('submitBtn');btn.disabled=true;
+  const g=id=>document.getElementById(id);
+  const payload={country:g('country')?g('country').value:'Unknown',age:g('age').value,gender:g('gender').value,smoking_history:g('smoking').value,obesity:g('obesity').value,diabetes:g('diabetes').value,chronic_pancreatitis:g('chronic_pancreatitis').value,family_history:g('family_history').value,hereditary_condition:g('hereditary_condition').value,jaundice:g('jaundice').value,abdominal_discomfort:g('abdominal_discomfort').value,back_pain:g('back_pain').value,weight_loss:g('weight_loss').value,stage_at_diagnosis:g('stage_at_diagnosis').value,survival_time:g('survival_time').value,treatment_type:g('treatment_type').value,survival_status:g('survival_status').value};
+  try{const res=await fetch(API+'/predict/pancreatic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await res.json();if(data.error)throw new Error(data.error);lastResult=data;showResult(data);setTimeout(()=>document.getElementById('feedbackOverlay').classList.add('open'),1500);}
+  catch(err){alert('Error: '+err.message);}
+  finally{btn.disabled=false;}
+});
+function showResult(data){let card=document.getElementById('pancResultCard');if(!card){card=document.createElement('div');card.id='pancResultCard';card.style.cssText='background:#fff;border:2px solid #ccc;border-radius:12px;padding:2rem;margin:1.5rem auto;max-width:900px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.06)';document.querySelector('.form-section').prepend(card);}
+const isHigh=data.prediction.includes('HIGH');card.style.borderColor=isHigh?'#ef4444':'#22c55e';
+card.innerHTML='<div style="display:inline-block;padding:.5rem 1.5rem;border-radius:999px;font-size:1.1rem;font-weight:700;background:'+(isHigh?'hsl(0,72%,95%)':'hsl(142,60%,95%)')+';color:'+(isHigh?'#ef4444':'#16a34a')+';margin-bottom:1rem">'+(isHigh?'⚠️ HIGH RISK':'✅ LOW RISK')+'</div><p style="color:#6b7280;font-size:.95rem">'+(isHigh?'Indicators suggest elevated pancreatic cancer risk. Consult an oncologist.':'No significant pancreatic risk indicators detected.')+'</p>'+(data.confidence_pct!=null?'<div style="max-width:300px;margin:1rem auto"><p style="font-size:.85rem;color:#9ca3af">Confidence: '+data.confidence_pct+'%</p><div style="height:10px;background:#e5e7eb;border-radius:999px"><div style="height:100%;width:'+data.confidence_pct+'%;background:hsl(187,72%,35%);border-radius:999px"></div></div></div>':'');
+card.scrollIntoView({behavior:'smooth',block:'center'});}
+async function sendFeedback(val){if(!lastResult)return;document.getElementById('feedbackOverlay').classList.remove('open');try{await fetch(API+'/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:lastResult.id,tab:lastResult.tab,feedback:val})});}catch(e){}}
+document.getElementById('fbYes').onclick=()=>sendFeedback('yes');
+document.getElementById('fbNo').onclick=()=>sendFeedback('no');
+document.getElementById('fbSkip').onclick=()=>document.getElementById('feedbackOverlay').classList.remove('open');
+</script></body>
+</html>

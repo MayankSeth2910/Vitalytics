@@ -34,7 +34,7 @@ models = {
     'heart':      {'model': None, 'scaler': None},
     'liver':      {'model': None, 'scaler': None},
     'copd':       {'model': None, 'scaler': None},
-    'pancreatic': {'model': None, 'encoder': None},
+    'pancreatic': {'model': None},
 }
 
 def _load(path):
@@ -62,8 +62,7 @@ def load_models():
             print(f"⚠️  {key.capitalize()} model: {e}")
 
     try:
-        models['pancreatic']['model']   = _load(f'{d}/pancreatic/model.pkl')
-        models['pancreatic']['encoder'] = _load(f'{d}/pancreatic/encoder.pkl')
+        models['pancreatic']['model'] = _load(f'{d}/pancreatic/model_pipeline.pkl')
         print("✅ Pancreatic model loaded")
     except Exception as e:
         print(f"⚠️  Pancreatic model: {e}")
@@ -89,8 +88,11 @@ SHEET_HEADERS = {
     'Pancreatic': ['ID','Timestamp','Country','Age','Gender','SmokingHistory',
                    'Obesity','Diabetes','ChronicPancreatitis','FamilyHistory',
                    'HereditaryCondition','Jaundice','AbdominalDiscomfort',
-                   'BackPain','WeightLoss','StageAtDiagnosis','SurvivalTime',
-                   'TreatmentType','SurvivalStatus','Prediction','Confidence','Feedback'],
+                   'BackPain','WeightLoss','StageAtDiagnosis','SurvivalTimeMonths',
+                   'TreatmentType','SurvivalStatus','EconomicStatus',
+                   'PhysicalActivityLevel','AccessToHealthcare','AlcoholConsumption',
+                   'UrbanVsRural','DietProcessedFood','DevelopmentOfType2Diabetes',
+                   'Prediction','Confidence','Feedback'],
 }
 
 worksheets = {}   # tab_name -> worksheet object
@@ -338,38 +340,52 @@ def preprocess_copd(data: dict):
 # ─────────────────────────────────────────────────────────────────────────────
 # PREPROCESSING – PANCREATIC
 # ─────────────────────────────────────────────────────────────────────────────
-YES_NO = {'Yes': 1, 'No': 0}
-STAGE_MAP = {'Stage I':1,'Stage II':2,'Stage III':3,'Stage IV':4}
-TREATMENT_MAP = {'Surgery':0,'Chemotherapy':1,'Radiation':2}
+PARC_COLUMNS = [
+    'Country', 'Age', 'Gender', 'Smoking_History', 'Obesity', 'Diabetes',
+    'Chronic_Pancreatitis', 'Family_History', 'Hereditary_Condition',
+    'Jaundice', 'Abdominal_Discomfort', 'Back_Pain', 'Weight_Loss',
+    'Stage_at_Diagnosis', 'Survival_Time_Months', 'Treatment_Type',
+    'Economic_Status', 'Physical_Activity_Level', 'Access_to_Healthcare',
+    'Alcohol_Consumption', 'Urban_vs_Rural', 'Diet_Processed_Food',
+    'Development_of_Type2_Diabetes'
+]
+
+YES_NO       = {'Yes': 1, 'No': 0}
+STAGE_MAP    = {'Stage I': 1, 'Stage II': 2, 'Stage III': 3, 'Stage IV': 4}
+TREATMENT_MAP = {'Surgery': 0, 'Chemotherapy': 1, 'Radiation': 2}
+GENDER_MAP   = {'Male': 1, 'Female': 0}
+ECON_MAP     = {'Low': 0, 'Middle': 1, 'High': 2}
+ACTIVITY_MAP = {'Low': 0, 'Moderate': 1, 'High': 2}
+URBAN_MAP    = {'Urban': 1, 'Rural': 0}
 
 def preprocess_pancreatic(data: dict):
     print("✅ Pancreatic Preprocess Starts")
     row = {
-        'Age':                   float(data['age']),
-        'Gender':                1 if data['gender'] == 'Male' else 0,
-        'SmokingHistory':        YES_NO.get(data['smoking_history'], 0),
-        'Obesity':               YES_NO.get(data['obesity'], 0),
-        'Diabetes':              YES_NO.get(data['diabetes'], 0),
-        'ChronicPancreatitis':   YES_NO.get(data['chronic_pancreatitis'], 0),
-        'FamilyHistory':         YES_NO.get(data['family_history'], 0),
-        'HereditaryCondition':   YES_NO.get(data['hereditary_condition'], 0),
-        'Jaundice':              YES_NO.get(data['jaundice'], 0),
-        'AbdominalDiscomfort':   YES_NO.get(data['abdominal_discomfort'], 0),
-        'BackPain':              YES_NO.get(data['back_pain'], 0),
-        'WeightLoss':            YES_NO.get(data['weight_loss'], 0),
-        'StageAtDiagnosis':      STAGE_MAP.get(data['stage_at_diagnosis'], 1),
-        'SurvivalTime':          float(data['survival_time']),
-        'TreatmentType':         TREATMENT_MAP.get(data['treatment_type'], 0),
-        'SurvivalStatus':        YES_NO.get(data['survival_status'], 0),
+        'Country':                       data.get('country', 'Unknown'),  # string – categorical
+        'Age':                           float(data['age']),
+        'Gender':                        GENDER_MAP.get(data['gender'], 0),
+        'Smoking_History':               YES_NO.get(data['smoking_history'], 0),
+        'Obesity':                       YES_NO.get(data['obesity'], 0),
+        'Diabetes':                      YES_NO.get(data['diabetes'], 0),
+        'Chronic_Pancreatitis':          YES_NO.get(data['chronic_pancreatitis'], 0),
+        'Family_History':                YES_NO.get(data['family_history'], 0),
+        'Hereditary_Condition':          YES_NO.get(data['hereditary_condition'], 0),
+        'Jaundice':                      YES_NO.get(data['jaundice'], 0),
+        'Abdominal_Discomfort':          YES_NO.get(data['abdominal_discomfort'], 0),
+        'Back_Pain':                     YES_NO.get(data['back_pain'], 0),
+        'Weight_Loss':                   YES_NO.get(data['weight_loss'], 0),
+        'Stage_at_Diagnosis':            STAGE_MAP.get(data['stage_at_diagnosis'], 1),
+        'Survival_Time_Months':          float(data['survival_time']),
+        'Treatment_Type':                TREATMENT_MAP.get(data['treatment_type'], 0),
+        'Economic_Status':               ECON_MAP.get(data['economic_status'], 1),
+        'Physical_Activity_Level':       ACTIVITY_MAP.get(data['physical_activity_level'], 1),
+        'Access_to_Healthcare':          YES_NO.get(data['access_to_healthcare'], 1),
+        'Alcohol_Consumption':           YES_NO.get(data['alcohol_consumption'], 0),
+        'Urban_vs_Rural':                URBAN_MAP.get(data['urban_vs_rural'], 1),
+        'Diet_Processed_Food':           YES_NO.get(data['diet_processed_food'], 0),
+        'Development_of_Type2_Diabetes': YES_NO.get(data['development_of_type2_diabetes'], 0),
     }
-    df = pd.DataFrame([row])
-    # If encoder stored (e.g. country dummies), apply here
-    enc = models['pancreatic']['encoder']
-    if enc is not None:
-        country_encoded = enc.transform([[data.get('country','Unknown')]])
-        # Append encoded country columns
-        country_df = pd.DataFrame(country_encoded, columns=enc.get_feature_names_out(['Country']))
-        df = pd.concat([df.reset_index(drop=True), country_df], axis=1)
+    df = pd.DataFrame([row])[PARC_COLUMNS]
     print("✅ Pancreatic Preprocess Ends")
     return df
 
@@ -503,8 +519,11 @@ def predict_pancreatic_route():
                data.get('abdominal_discomfort'), data.get('back_pain'),
                data.get('weight_loss'), data.get('stage_at_diagnosis'),
                data.get('survival_time'), data.get('treatment_type'),
-               data.get('survival_status'), label,
-               round(conf*100,1) if conf else None, 'Not provided']
+               data.get('survival_status'), data.get('economic_status'),
+               data.get('physical_activity_level'), data.get('access_to_healthcare'),
+               data.get('alcohol_consumption'), data.get('urban_vs_rural'),
+               data.get('diet_processed_food'), data.get('development_of_type2_diabetes'),
+               label, round(conf*100,1) if conf else None, 'Not provided']
         row_id = save_row('Pancreatic', row)
         return jsonify({'prediction': label, 'confidence': conf,
                         'confidence_pct': round(conf*100,1) if conf else None,
