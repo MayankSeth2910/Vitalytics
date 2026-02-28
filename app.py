@@ -296,9 +296,13 @@ def preprocess_liver(data: dict):
 # ─────────────────────────────────────────────────────────────────────────────
 # PREPROCESSING – COPD
 # ─────────────────────────────────────────────────────────────────────────────
-COPD_FEATURES = ['AGE','PackHistory','MWT1Best','FEV1','FEV1PRED','FVC','FVCPRED',
-                 'CAT','HAD','SGRQ','AGEquartiles','gender','smoking','Diabetes',
-                 'muscular','hypertension','AtrialFib','IHD']
+COPD_FEATURES = [
+    'AGE', 'PackHistory', 'MWT1', 'MWT2', 'MWT1Best',
+    'FEV1', 'FEV1PRED', 'FVC', 'FVCPRED',
+    'CAT', 'HAD', 'SGRQ', 'AGEquartiles',
+    'gender', 'smoking', 'Diabetes',
+    'muscular', 'hypertension', 'AtrialFib', 'IHD'
+]
 COPD_SEVERITY = {1:'MILD', 2:'MODERATE', 3:'SEVERE', 4:'VERY SEVERE'}
 
 def preprocess_copd(data: dict):
@@ -306,6 +310,8 @@ def preprocess_copd(data: dict):
     row = {
         'AGE':          float(data['age']),
         'PackHistory':  float(data['pack_history']),
+        'MWT1':         float(data['mwt1']),          # ← NEW
+        'MWT2':         float(data['mwt2']),          # ← NEW
         'MWT1Best':     float(data['mwt1best']),
         'FEV1':         float(data['fev1']),
         'FEV1PRED':     float(data['fev1pred']),
@@ -316,19 +322,18 @@ def preprocess_copd(data: dict):
         'SGRQ':         float(data['sgrq']),
         'AGEquartiles': int(data['age_quartiles']),
         'gender':       int(data['gender']),
-        'smoking':      int(data['smoking']),
+        'smoking':      int(data['smoking']),          # ← now sends 1 or 2
         'Diabetes':     int(data['diabetes']),
         'muscular':     int(data['muscular']),
         'hypertension': int(data['hypertension']),
         'AtrialFib':    int(data['atrial_fib']),
         'IHD':          int(data['ihd']),
     }
-    df = pd.DataFrame([row])
-    num_cols = ['AGE','PackHistory','MWT1Best','FEV1','FEV1PRED',
-                'FVC','FVCPRED','CAT','HAD','SGRQ']
-    df[num_cols] = models['copd']['scaler'].transform(df[num_cols])
+    df = pd.DataFrame([row])[COPD_FEATURES]           # enforce exact column order
+    arr = models['copd']['scaler'].transform(df.values)
+    df_scaled = pd.DataFrame(arr, columns=COPD_FEATURES)
     print("✅ COPD Preprocess Ends")
-    return df
+    return df_scaled
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PREPROCESSING – PANCREATIC

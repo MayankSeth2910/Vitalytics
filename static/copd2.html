@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COPD Assessment - VITALYTICS</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:hsl(187,72%,35%);--bg:hsl(200,20%,98%);--card:#fff;
+  --text:hsl(210,20%,15%);--muted:hsl(210,10%,45%);--border:hsl(210,15%,90%);
+  --destructive:hsl(0,72%,51%);--success:hsl(142,60%,40%);
+  --warning:hsl(38,92%,50%);--radius:12px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04);
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+a{text-decoration:none;color:inherit}
+.navbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.navbar .container{max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-size:1.4rem;font-weight:700;color:var(--primary)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:.9rem;font-weight:500;color:var(--muted)}
+.nav-links a.active{color:var(--primary)}
+.hero{background:linear-gradient(135deg,hsl(187,72%,95%),hsl(187,72%,90%));border-bottom:1px solid var(--border);padding:3rem 1.5rem;text-align:center}
+.hero h1{font-size:2rem;font-weight:700;margin-bottom:.5rem}
+.hero p{color:var(--muted)}
+.form-section{max-width:900px;margin:2rem auto;padding:0 1.5rem}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem 2rem;margin-bottom:1.5rem;box-shadow:var(--shadow)}
+.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem}
+.section-icon{width:40px;height:40px;border-radius:10px;background:hsl(187,72%,92%);display:flex;align-items:center;justify-content:center}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem}
+.form-group{display:flex;flex-direction:column;gap:.35rem}
+.form-group label{font-size:.85rem;font-weight:600}
+.req{color:var(--destructive)}
+.form-group input,.form-group select{height:40px;border:1px solid var(--border);border-radius:8px;padding:0 .75rem;font-size:.9rem}
+.submit-wrap{text-align:center;margin-bottom:2rem}
+.btn-primary{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 3rem;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.disclaimer{display:flex;gap:.75rem;align-items:flex-start;background:hsl(210,15%,96%);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.5rem}
+.disclaimer svg{flex-shrink:0;width:20px;height:20px;stroke:var(--muted);margin-top:2px}
+.disclaimer p{font-size:.85rem;color:var(--muted)}
+.result-card{display:none;background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;text-align:center;box-shadow:var(--shadow)}
+.severity-mild{border-color:var(--success) !important}
+.severity-moderate{border-color:var(--warning) !important}
+.severity-severe,.severity-very-severe{border-color:var(--destructive) !important}
+.result-badge{display:inline-block;padding:.5rem 1.5rem;border-radius:999px;font-size:1.1rem;font-weight:700;margin-bottom:1rem}
+.badge-mild{background:hsl(142,60%,95%);color:var(--success)}
+.badge-moderate{background:hsl(38,92%,95%);color:hsl(38,92%,35%)}
+.badge-severe,.badge-very-severe{background:hsl(0,72%,95%);color:var(--destructive)}
+.conf-bar-wrap{margin:1rem auto;max-width:300px}
+.conf-label{font-size:.85rem;color:var(--muted);margin-bottom:.4rem}
+.conf-bar{height:10px;background:var(--border);border-radius:999px;overflow:hidden}
+.conf-fill{height:100%;background:var(--primary);border-radius:999px;transition:width .8s ease}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.popup{background:var(--card);border-radius:var(--radius);padding:2rem;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.popup h3{font-size:1.25rem;font-weight:600;margin-bottom:.75rem}
+.popup p{color:var(--muted);margin-bottom:1.5rem;font-size:.95rem}
+.popup-btns{display:flex;gap:1rem;justify-content:center}
+.btn-yes{padding:.6rem 2rem;background:var(--success);color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer}
+.btn-no{padding:.6rem 2rem;background:var(--destructive);color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer}
+.btn-skip{margin-top:.75rem;background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;text-decoration:underline}
+footer{background:rgba(0,0,0,.85);color:#aaa;padding:2rem 1.5rem;text-align:center;font-size:.8rem}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="index.html" class="logo">VITALYTICS</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="assesment.html" class="active">Assessment</a></li>
+      <li><a href="descript.html">How It Works</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>🫁 COPD Severity Assessment</h1>
+  <p>Enter pulmonary function and clinical data to predict COPD severity.</p>
+</section>
+
+<div class="form-section">
+  <div class="result-card" id="resultCard">
+    <div class="result-badge" id="resultBadge"></div>
+    <p id="resultMsg" style="color:var(--muted);font-size:.95rem;margin-bottom:1rem"></p>
+    <div class="conf-bar-wrap">
+      <div class="conf-label" id="confLabel"></div>
+      <div class="conf-bar"><div class="conf-fill" id="confFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <form id="copdForm">
+    <div class="form-card">
+      <div class="section-header"><div class="section-icon">👤</div><h2>Demographics</h2></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Age <span class="req">*</span></label><input type="number" id="age" required></div>
+        <div class="form-group"><label>Gender <span class="req">*</span></label>
+          <select id="gender" required><option value="">Select</option><option value="0">Female</option><option value="1">Male</option></select></div>
+        <div class="form-group"><label>Smoking Pack History (pack-years) <span class="req">*</span></label><input type="number" id="pack_history" step="0.1" required></div>
+        <div class="form-group"><label>Age Quartile (1-4) <span class="req">*</span></label>
+          <select id="age_quartiles" required><option value="">Select</option><option value="1">Q1 (youngest)</option><option value="2">Q2</option><option value="3">Q3</option><option value="4">Q4 (oldest)</option></select></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="section-header"><div class="section-icon">🫁</div><h2>Pulmonary Function Tests</h2></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Best 6-Minute Walk (MWT1Best, metres) <span class="req">*</span></label><input type="number" id="mwt1best" step="1" required></div>
+        <div class="form-group"><label>FEV1 (L) <span class="req">*</span></label><input type="number" id="fev1" step="0.01" required></div>
+        <div class="form-group"><label>FEV1 % Predicted <span class="req">*</span></label><input type="number" id="fev1pred" step="0.1" required></div>
+        <div class="form-group"><label>FVC (L) <span class="req">*</span></label><input type="number" id="fvc" step="0.01" required></div>
+        <div class="form-group"><label>FVC % Predicted <span class="req">*</span></label><input type="number" id="fvcpred" step="0.1" required></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="section-header"><div class="section-icon">📊</div><h2>Clinical Scores</h2></div>
+      <div class="form-grid">
+        <div class="form-group"><label>CAT Score (0-40) <span class="req">*</span></label><input type="number" id="cat" min="0" max="40" required></div>
+        <div class="form-group"><label>HAD Score <span class="req">*</span></label><input type="number" id="had" step="0.1" required></div>
+        <div class="form-group"><label>SGRQ Score (0-100) <span class="req">*</span></label><input type="number" id="sgrq" step="0.1" min="0" max="100" required></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="section-header"><div class="section-icon">🏥</div><h2>Comorbidities</h2></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Smoking Status <span class="req">*</span></label>
+          <select id="smoking" required><option value="">Select</option><option value="0">Non-smoker</option><option value="1">Smoker</option></select></div>
+        <div class="form-group"><label>Diabetes</label>
+          <select id="diabetes"><option value="0">No</option><option value="1">Yes</option></select></div>
+        <div class="form-group"><label>Muscular Disease</label>
+          <select id="muscular"><option value="0">No</option><option value="1">Yes</option></select></div>
+        <div class="form-group"><label>Hypertension</label>
+          <select id="hypertension"><option value="0">No</option><option value="1">Yes</option></select></div>
+        <div class="form-group"><label>Atrial Fibrillation</label>
+          <select id="atrial_fib"><option value="0">No</option><option value="1">Yes</option></select></div>
+        <div class="form-group"><label>Ischaemic Heart Disease</label>
+          <select id="ihd"><option value="0">No</option><option value="1">Yes</option></select></div>
+      </div>
+    </div>
+
+    <div class="submit-wrap">
+      <button type="submit" class="btn-primary" id="submitBtn">
+        Analyze COPD Severity
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        <div class="spinner" id="spinner"></div>
+      </button>
+    </div>
+
+    <div class="disclaimer">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg>
+      <p>This tool is for educational and screening purposes only. Always consult a healthcare professional for medical advice.</p>
+    </div>
+  </form>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="popup">
+    <h3>Was this diagnosis accurate?</h3>
+    <p>Your feedback helps us improve our model.</p>
+    <div class="popup-btns">
+      <button class="btn-yes" id="btnYes">✅ Yes</button>
+      <button class="btn-no"  id="btnNo">❌ No</button>
+    </div>
+    <br>
+    <button class="btn-skip" id="btnSkip">Skip feedback</button>
+  </div>
+</div>
+
+<footer><p>© 2026 VITALYTICS. Educational purposes only.</p></footer>
+
+<script>
+const API = '';
+let lastResult = null;
+const SEVERITY_MSGS = {
+  'MILD': 'Mild COPD detected. Lifestyle changes and monitoring recommended.',
+  'MODERATE': 'Moderate COPD detected. Medical treatment and pulmonary rehab advised.',
+  'SEVERE': 'Severe COPD detected. Prompt specialist consultation required.',
+  'VERY SEVERE': 'Very Severe COPD detected. Immediate medical attention strongly recommended.'
+};
+
+document.getElementById('copdForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const spin = document.getElementById('spinner');
+  btn.disabled = true; spin.style.display = 'block';
+
+  const payload = {
+    age:          document.getElementById('age').value,
+    gender:       document.getElementById('gender').value,
+    pack_history: document.getElementById('pack_history').value,
+    age_quartiles:document.getElementById('age_quartiles').value,
+    mwt1best:     document.getElementById('mwt1best').value,
+    fev1:         document.getElementById('fev1').value,
+    fev1pred:     document.getElementById('fev1pred').value,
+    fvc:          document.getElementById('fvc').value,
+    fvcpred:      document.getElementById('fvcpred').value,
+    cat:          document.getElementById('cat').value,
+    had:          document.getElementById('had').value,
+    sgrq:         document.getElementById('sgrq').value,
+    smoking:      document.getElementById('smoking').value,
+    diabetes:     document.getElementById('diabetes').value,
+    muscular:     document.getElementById('muscular').value,
+    hypertension: document.getElementById('hypertension').value,
+    atrial_fib:   document.getElementById('atrial_fib').value,
+    ihd:          document.getElementById('ihd').value,
+  };
+
+  try {
+    const res  = await fetch(`${API}/predict/copd`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    lastResult = data;
+    showResult(data);
+    setTimeout(() => document.getElementById('overlay').classList.add('open'), 1500);
+  } catch (err) {
+    alert('Error: ' + err.message);
+  } finally {
+    btn.disabled = false; spin.style.display = 'none';
+  }
+});
+
+function showResult(data) {
+  const card  = document.getElementById('resultCard');
+  const badge = document.getElementById('resultBadge');
+  const msg   = document.getElementById('resultMsg');
+  const fill  = document.getElementById('confFill');
+  const lbl   = document.getElementById('confLabel');
+  const sev   = data.prediction.replace(' ','_').toLowerCase();
+
+  card.style.display = 'block';
+  card.className = `result-card severity-${sev}`;
+  badge.className = `result-badge badge-${sev}`;
+  badge.textContent = `COPD Severity: ${data.prediction}`;
+  msg.textContent = SEVERITY_MSGS[data.prediction] || 'Consult a pulmonologist for detailed evaluation.';
+
+  if (data.confidence_pct != null) {
+    lbl.textContent = `Model confidence: ${data.confidence_pct}%`;
+    fill.style.width = data.confidence_pct + '%';
+  }
+  card.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+async function sendFeedback(val) {
+  if (!lastResult) return;
+  document.getElementById('overlay').classList.remove('open');
+  try {
+    await fetch(`${API}/feedback`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id:lastResult.id, tab:lastResult.tab, feedback:val }) });
+  } catch(e) { console.warn('Feedback error', e); }
+}
+
+document.getElementById('btnYes').onclick  = () => sendFeedback('yes');
+document.getElementById('btnNo').onclick   = () => sendFeedback('no');
+document.getElementById('btnSkip').onclick = () => document.getElementById('overlay').classList.remove('open');
+</script>
+</body>
+</html>
