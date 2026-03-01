@@ -95,7 +95,24 @@
   .btn-primary .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Result tables */
+  /* Results section */
+  .results-section { max-width: 900px; margin: 0 auto 3rem; padding: 0 1.5rem; display: none; }
+  .results-section.visible { display: block; }
+  .result-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); animation: fadeUp 0.5s ease forwards; }
+  .result-header { padding: 2rem; text-align: center; color: #fff; }
+  .result-header.positive { background: linear-gradient(135deg, hsl(0,60%,50%), hsl(20,80%,50%)); }
+  .result-header.negative { background: linear-gradient(135deg, var(--primary), hsl(160,60%,40%)); }
+  .result-header h2 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+  .result-header p { opacity: 0.9; }
+
+  .result-body { padding: 2rem; }
+  .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
+  .stat-card .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+  .stat-card .stat-value { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
+  .stat-card .stat-value.pos { color: var(--destructive); }
+  .stat-card .stat-value.neg { color: var(--success); }
+
   .detail-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
   .detail-table th, .detail-table td { padding: 0.6rem 1rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
   .detail-table th { background: var(--bg); font-weight: 600; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -112,6 +129,9 @@
   .rec-list li::before { content: '✓'; position: absolute; left: 0; color: var(--success); font-weight: 700; }
 
   .sub-heading { font-size: 1rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.25rem; }
+
+  /* Inline result panel */
+  #result-panel { display:none; margin-top:1.5rem; animation: fadeUp 0.4s ease; }
 
   /* Footer */
   .footer { background: var(--text); color: hsl(210,10%,70%); padding: 2rem 1.5rem; text-align: center; font-size: 0.8rem; }
@@ -197,7 +217,7 @@
         <div class="form-group" data-field="oldpeak">
           <label>ST Depression / Oldpeak <span class="req">*</span></label>
           <input type="number" id="oldpeak" step="0.1" placeholder="e.g., 1.5" min="0">
-          <span class="desc">Normal: 0.0 – 1.0 (exercise-induced)</span>
+          <span class="desc">Normal: 0.0 – 1.0</span>
           <span class="error-msg"></span>
         </div>
       </div>
@@ -344,19 +364,19 @@ let lastResult = null;
 
 // ── Reference ranges for numerical observations ────────────────────────────
 const REFS = {
-  trestbps: { min: 60,  max: 120,  unit: 'mmHg', label: 'Resting Blood Pressure' },
+  trestbps: { min: 60,  max: 120,  unit: 'mmHg',  label: 'Resting Blood Pressure' },
   chol:     { min: 0,   max: 200,  unit: 'mg/dL', label: 'Cholesterol' },
   thalach:  { min: 60,  max: 202,  unit: 'bpm',   label: 'Max Heart Rate' },
   oldpeak:  { min: 0,   max: 1.0,  unit: '',      label: 'ST Depression (Oldpeak)' },
 };
 
 // Label maps for display
-const SEX_LABELS     = { '0': 'Female', '1': 'Male' };
-const CP_LABELS      = { '0': 'Typical Angina', '1': 'Atypical Angina', '2': 'Non-Anginal Pain', '3': 'Asymptomatic' };
-const FBS_LABELS     = { '0': 'No', '1': 'Yes' };
-const ECG_LABELS     = { '0': 'Normal', '1': 'ST-T Wave Abnormality', '2': 'LV Hypertrophy' };
-const EXANG_LABELS   = { '0': 'No', '1': 'Yes' };
-const SLOPE_LABELS   = { '0': 'Upsloping', '1': 'Flat', '2': 'Downsloping' };
+const SEX_LABELS   = { '0': 'Female', '1': 'Male' };
+const CP_LABELS    = { '0': 'Typical Angina', '1': 'Atypical Angina', '2': 'Non-Anginal Pain', '3': 'Asymptomatic' };
+const FBS_LABELS   = { '0': 'No', '1': 'Yes' };
+const ECG_LABELS   = { '0': 'Normal', '1': 'ST-T Wave Abnormality', '2': 'LV Hypertrophy' };
+const EXANG_LABELS = { '0': 'No', '1': 'Yes' };
+const SLOPE_LABELS = { '0': 'Upsloping', '1': 'Flat', '2': 'Downsloping' };
 
 // ── Form submit ─────────────────────────────────────────────────────────────
 document.getElementById('heartForm').addEventListener('submit', async (e) => {
@@ -434,8 +454,8 @@ function showHeartResult(data, payload) {
   box.style.borderColor = isPos ? 'var(--destructive)' : 'var(--success)';
   box.style.background  = isPos ? 'hsl(0,72%,97%)'    : 'hsl(142,60%,97%)';
   val.textContent = isPos ? 'HEART DISEASE DETECTED' : 'NO HEART DISEASE DETECTED';
-  val.style.color = isPos ? 'var(--destructive)' : 'var(--success)';
-  val.style.fontSize = '1.8rem';
+  val.style.color     = isPos ? 'var(--destructive)' : 'var(--success)';
+  val.style.fontSize  = '1.8rem';
 
   const pct = data.confidence_pct != null ? data.confidence_pct
             : data.confidence      != null ? Math.round(data.confidence * 100)
@@ -454,22 +474,23 @@ function showHeartResult(data, payload) {
   panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+// ── Detail Table ────────────────────────────────────────────────────────────
 function buildDetailTable(payload) {
   const tbody = document.getElementById('detailBody');
   tbody.innerHTML = '';
 
   const rows = [
-    { label: 'Age',                    key: null,       val: payload.age + ' yrs',                             ref: '—' },
-    { label: 'Sex',                    key: null,       val: SEX_LABELS[payload.sex] || payload.sex,           ref: '—' },
-    { label: 'Chest Pain Type',        key: null,       val: CP_LABELS[payload.cp] || payload.cp,             ref: '0=Typical Angina' },
-    { label: 'Resting Blood Pressure', key: 'trestbps', val: payload.trestbps + ' mmHg',                      ref: '60–120 mmHg' },
-    { label: 'Cholesterol',            key: 'chol',     val: payload.chol + ' mg/dL',                         ref: '< 200 mg/dL' },
-    { label: 'Fasting Blood Sugar >120', key: null,     val: FBS_LABELS[payload.fbs] || payload.fbs,          ref: 'Elevated if Yes' },
-    { label: 'Resting ECG',            key: null,       val: ECG_LABELS[payload.restecg] || payload.restecg,  ref: 'Normal = 0' },
-    { label: 'Max Heart Rate',         key: 'thalach',  val: payload.thalach + ' bpm',                        ref: '60–202 bpm' },
-    { label: 'Exercise Angina',        key: null,       val: EXANG_LABELS[payload.exang] || payload.exang,    ref: 'Yes is a risk factor' },
-    { label: 'ST Depression (Oldpeak)',key: 'oldpeak',  val: payload.oldpeak,                                 ref: '0.0–1.0' },
-    { label: 'ST Slope',               key: null,       val: SLOPE_LABELS[payload.slope] || payload.slope,    ref: 'Flat/Down = higher risk' },
+    { label: 'Age',                      key: null,       val: payload.age + ' yrs',                            ref: '—' },
+    { label: 'Sex',                      key: null,       val: SEX_LABELS[payload.sex] || payload.sex,          ref: '—' },
+    { label: 'Chest Pain Type',          key: null,       val: CP_LABELS[payload.cp] || payload.cp,             ref: '0 = Typical Angina' },
+    { label: 'Resting Blood Pressure',   key: 'trestbps', val: payload.trestbps + ' mmHg',                     ref: '60–120 mmHg' },
+    { label: 'Cholesterol',              key: 'chol',     val: payload.chol + ' mg/dL',                        ref: '< 200 mg/dL' },
+    { label: 'Fasting Blood Sugar >120', key: null,       val: FBS_LABELS[payload.fbs] || payload.fbs,         ref: 'Elevated if Yes' },
+    { label: 'Resting ECG',              key: null,       val: ECG_LABELS[payload.restecg] || payload.restecg, ref: 'Normal = 0' },
+    { label: 'Max Heart Rate',           key: 'thalach',  val: payload.thalach + ' bpm',                       ref: '60–202 bpm' },
+    { label: 'Exercise Angina',          key: null,       val: EXANG_LABELS[payload.exang] || payload.exang,   ref: 'Yes is a risk factor' },
+    { label: 'ST Depression (Oldpeak)',  key: 'oldpeak',  val: payload.oldpeak,                                ref: '0.0–1.0' },
+    { label: 'ST Slope',                 key: null,       val: SLOPE_LABELS[payload.slope] || payload.slope,   ref: 'Flat/Down = higher risk' },
   ];
 
   rows.forEach(r => {
@@ -486,6 +507,7 @@ function isAbnormal(key, value) {
   return value < ref.min || value > ref.max;
 }
 
+// ── Observations & Recommendations ─────────────────────────────────────────
 function buildObservations(payload, isPos) {
   const obsList = document.getElementById('obsList');
   const recList = document.getElementById('recList');

@@ -228,30 +228,51 @@ HEART_CATEGORICAL = ['sex','cp','fbs','restecg','exang','slope']
 
 def preprocess_heart(data: dict):
     print("✅ Heart Preprocess Starts")
+
+    age      = float(data['age'])
+    sex      = int(data['sex'])        # 0 or 1
+    cp       = int(data['cp']) + 1     # frontend 0-3 → CSV 1-4 (drop_first removes cp_1)
+    trestbps = float(data['trestbps'])
+    chol     = float(data['chol'])
+    fbs      = int(data['fbs'])        # 0 or 1
+    restecg  = int(data['restecg'])    # 0, 1, 2
+    thalach  = float(data['thalach'])
+    exang    = int(data['exang'])      # 0 or 1
+    oldpeak  = float(data['oldpeak'])
+    slope    = int(data['slope']) + 1  # frontend 0-2 → CSV 1-3 (drop_first removes slope_0)
+
     row = {
-        'age':     float(data['age']),
-        'sex':     int(data['sex']),         # 0/1
-        'cp':      int(data['cp']),          # 0-3
-        'trestbps': float(data['trestbps']),
-        'chol':    float(data['chol']),
-        'fbs':     int(data['fbs']),         # 0/1
-        'restecg': int(data['restecg']),     # 0-2
-        'thalach': float(data['thalach']),
-        'exang':   int(data['exang']),       # 0/1
-        'oldpeak': float(data['oldpeak']),
-        'slope':   int(data['slope']),       # 0-2
+        'age':       age,
+        'trestbps':  trestbps,
+        'chol':      chol,
+        'thalach':   thalach,
+        'oldpeak':   oldpeak,
+        'sex_1':     1 if sex == 1 else 0,
+        'cp_2':      1 if cp == 2 else 0,
+        'cp_3':      1 if cp == 3 else 0,
+        'cp_4':      1 if cp == 4 else 0,
+        'fbs_1':     1 if fbs == 1 else 0,
+        'restecg_1': 1 if restecg == 1 else 0,
+        'restecg_2': 1 if restecg == 2 else 0,
+        'exang_1':   1 if exang == 1 else 0,
+        'slope_1':   1 if slope == 1 else 0,   # ✅ was missing
+        'slope_2':   1 if slope == 2 else 0,
+        'slope_3':   1 if slope == 3 else 0,
     }
-    df = pd.DataFrame([row])
-    df = pd.get_dummies(df, columns=HEART_CATEGORICAL, drop_first=True)
-    # Ensure all expected columns are present (fill missing with 0)
-    expected = models['heart'].get('feature_names', df.columns.tolist())
-    for col in expected:
-        if col not in df.columns:
-            df[col] = 0
-    df = df.reindex(columns=expected, fill_value=0)
-    num_cols = ['age','trestbps','chol','thalach','oldpeak']
-    existing_num = [c for c in num_cols if c in df.columns]
-    df[existing_num] = models['heart']['scaler'].transform(df[existing_num])
+
+    HEART_EXPECTED_COLS = [
+        'age', 'trestbps', 'chol', 'thalach', 'oldpeak',
+        'sex_1', 'cp_2', 'cp_3', 'cp_4',
+        'fbs_1', 'restecg_1', 'restecg_2',
+        'exang_1', 'slope_1', 'slope_2', 'slope_3'  # ✅ slope_1 added
+    ]
+
+    df = pd.DataFrame([row])[HEART_EXPECTED_COLS]
+
+    # ✅ Scale all 16 columns — scaler was trained on all 16, not just numerical
+    scaled = models['heart']['scaler'].transform(df)
+    df = pd.DataFrame(scaled, columns=HEART_EXPECTED_COLS)
+
     print("✅ Heart Preprocess Ends")
     return df
 
@@ -353,7 +374,7 @@ PARC_COLUMNS = [
 YES_NO       = {'Yes': 1, 'No': 0}
 STAGE_MAP    = {'Stage I': 1, 'Stage II': 2, 'Stage III': 3, 'Stage IV': 4}
 TREATMENT_MAP = {'Surgery': 0, 'Chemotherapy': 1, 'Radiation': 2}
-GENDER_MAP   = {'Male': 1, 'Female': 0}
+PARC_GENDER_MAP = {'Male': 1, 'Female': 0}
 ECON_MAP     = {'Low': 0, 'Middle': 1, 'High': 2}
 ACTIVITY_MAP = {'Low': 0, 'Moderate': 1, 'High': 2}
 URBAN_MAP    = {'Urban': 1, 'Rural': 0}
@@ -363,7 +384,7 @@ def preprocess_pancreatic(data: dict):
     row = {
         'Country':                       data.get('country', 'Unknown'),  # string – categorical
         'Age':                           float(data['age']),
-        'Gender':                        GENDER_MAP.get(data['gender'], 0),
+        'Gender':                        PARC_GENDER_MAP.get(data['gender'], 0),
         'Smoking_History':               YES_NO.get(data['smoking_history'], 0),
         'Obesity':                       YES_NO.get(data['obesity'], 0),
         'Diabetes':                      YES_NO.get(data['diabetes'], 0),
@@ -411,6 +432,8 @@ def predict_uti_route():
     print("✅ Predict UTI Route Started")
     try:
         data = request.json
+        if not data:
+            return jsonify({'error': 'No JSON body received'}), 400
         df   = preprocess_uti(data)
         pred, conf = predict_uti(df)
         label = 'POSITIVE' if pred == 1 else 'NEGATIVE'

@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UTI Diagnostic Assistant - Vitalytics</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<title>UTI Assessment - VITALYTICS</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -56,6 +55,7 @@
   .form-card:nth-child(2) { animation-delay: 0.1s; }
   .form-card:nth-child(3) { animation-delay: 0.2s; }
   .form-card:nth-child(4) { animation-delay: 0.3s; }
+  .form-card:nth-child(5) { animation-delay: 0.4s; }
 
   @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
@@ -92,36 +92,19 @@
   }
   .btn-primary:hover { background: var(--primary-light); box-shadow: 0 0 30px hsl(187,72%,35%,0.45); }
   .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-  .btn-primary .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Results */
-  .results-section { max-width: 900px; margin: 0 auto 3rem; padding: 0 1.5rem; display: none; }
-  .results-section.visible { display: block; }
-  .result-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); animation: fadeUp 0.5s ease forwards; }
-  .result-header { padding: 2rem; text-align: center; color: #fff; }
-  .result-header.positive { background: linear-gradient(135deg, hsl(0,60%,50%), hsl(20,80%,50%)); }
-  .result-header.negative { background: linear-gradient(135deg, var(--primary), hsl(160,60%,40%)); }
-  .result-header h2 { font-size: 1.5rem; margin-bottom: 0.25rem; }
-  .result-header p { opacity: 0.9; }
-
-  .result-body { padding: 2rem; }
-  .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-  .stat-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
-  .stat-card .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
-  .stat-card .stat-value { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
-  .stat-card .stat-value.pos { color: var(--destructive); }
-  .stat-card .stat-value.neg { color: var(--success); }
-
+  /* Detail table */
   .detail-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
   .detail-table th, .detail-table td { padding: 0.6rem 1rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
   .detail-table th { background: var(--bg); font-weight: 600; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
   .detail-table tr:last-child td { border-bottom: none; }
   .detail-table td:last-child { font-weight: 600; }
+  .detail-table .flag { color: var(--destructive); font-size: 0.7rem; margin-left: 4px; }
 
-  .risk-list { list-style: none; margin-top: 1rem; }
-  .risk-list li { padding: 0.5rem 0 0.5rem 1.5rem; position: relative; font-size: 0.9rem; color: var(--text-muted); }
-  .risk-list li::before { content: '⚠'; position: absolute; left: 0; }
+  .obs-list { list-style: none; margin-top: 1rem; }
+  .obs-list li { padding: 0.5rem 0 0.5rem 1.5rem; position: relative; font-size: 0.9rem; color: var(--text-muted); }
+  .obs-list li::before { content: '⚠'; position: absolute; left: 0; }
 
   .rec-list { list-style: none; margin-top: 1rem; }
   .rec-list li { padding: 0.5rem 0 0.5rem 1.5rem; position: relative; font-size: 0.9rem; color: var(--text-muted); }
@@ -153,15 +136,15 @@
 
 <!-- Hero -->
 <section class="hero">
-  <h1>Urinalysis Report</h1>
-  <p>Enter patient urinalysis data for automated diagnosis prediction. Fields marked with <span style="color:var(--destructive)">*</span> are required.</p>
+  <h1>🧪 UTI Assessment</h1>
+  <p>Enter urinalysis data for UTI diagnosis prediction. Fields marked with <span style="color:var(--destructive)">*</span> are required.</p>
 </section>
 
 <!-- Form -->
 <div class="form-section">
-  <form id="urinalysisForm" novalidate>
+  <form id="utiForm" novalidate>
 
-    <!-- Demographics -->
+    <!-- Patient Demographics -->
     <div class="form-card">
       <div class="section-header">
         <div class="section-icon">👤</div>
@@ -170,12 +153,12 @@
       <div class="form-grid">
         <div class="form-group" data-field="age">
           <label>Age <span class="req">*</span></label>
-          <input type="number" name="age" id="age" placeholder="e.g., 45" min="0" max="120" step="1">
+          <input type="number" id="age" placeholder="e.g., 35" min="0" max="120" step="1">
           <span class="error-msg"></span>
         </div>
         <div class="form-group" data-field="gender">
           <label>Gender <span class="req">*</span></label>
-          <select name="gender" id="gender">
+          <select id="gender">
             <option value="">Select gender</option>
             <option value="FEMALE">Female</option>
             <option value="MALE">Male</option>
@@ -194,7 +177,7 @@
       <div class="form-grid">
         <div class="form-group" data-field="color">
           <label>Color <span class="req">*</span></label>
-          <select name="color" id="color">
+          <select id="color">
             <option value="">Select color</option>
             <option value="YELLOW">Yellow</option>
             <option value="LIGHT YELLOW">Light Yellow</option>
@@ -211,7 +194,7 @@
         </div>
         <div class="form-group" data-field="transparency">
           <label>Transparency <span class="req">*</span></label>
-          <select name="transparency" id="transparency">
+          <select id="transparency">
             <option value="">Select transparency</option>
             <option value="CLEAR">Clear</option>
             <option value="SLIGHTLY HAZY">Slightly Hazy</option>
@@ -227,13 +210,25 @@
     <!-- Chemical Analysis -->
     <div class="form-card">
       <div class="section-header">
-        <div class="section-icon">🧪</div>
+        <div class="section-icon">⚗️</div>
         <h2>Chemical Analysis</h2>
       </div>
       <div class="form-grid">
+        <div class="form-group" data-field="ph">
+          <label>pH <span class="req">*</span></label>
+          <input type="number" id="ph" placeholder="e.g., 6.5" min="0" max="14" step="0.1">
+          <span class="desc">Normal range: 4.5 – 8.0</span>
+          <span class="error-msg"></span>
+        </div>
+        <div class="form-group" data-field="specificGravity">
+          <label>Specific Gravity <span class="req">*</span></label>
+          <input type="number" id="specificGravity" placeholder="e.g., 1.020" min="1.000" max="1.040" step="0.001">
+          <span class="desc">Normal range: 1.005 – 1.030</span>
+          <span class="error-msg"></span>
+        </div>
         <div class="form-group" data-field="glucose">
           <label>Glucose <span class="req">*</span></label>
-          <select name="glucose" id="glucose">
+          <select id="glucose">
             <option value="">Select glucose level</option>
             <option value="NEGATIVE">Negative</option>
             <option value="TRACE">Trace</option>
@@ -246,7 +241,7 @@
         </div>
         <div class="form-group" data-field="protein">
           <label>Protein <span class="req">*</span></label>
-          <select name="protein" id="protein">
+          <select id="protein">
             <option value="">Select protein level</option>
             <option value="NEGATIVE">Negative</option>
             <option value="TRACE">Trace</option>
@@ -254,18 +249,6 @@
             <option value="2+">2+</option>
             <option value="3+">3+</option>
           </select>
-          <span class="error-msg"></span>
-        </div>
-        <div class="form-group" data-field="ph">
-          <label>pH <span class="req">*</span></label>
-          <input type="number" name="ph" id="ph" placeholder="e.g., 6.5" min="0" max="14" step="0.1">
-          <span class="desc">Normal range: 4.5 – 8.0</span>
-          <span class="error-msg"></span>
-        </div>
-        <div class="form-group" data-field="specificGravity">
-          <label>Specific Gravity <span class="req">*</span></label>
-          <input type="number" name="specificGravity" id="specificGravity" placeholder="e.g., 1.020" min="1.000" max="1.040" step="0.001">
-          <span class="desc">Normal range: 1.005 – 1.030</span>
           <span class="error-msg"></span>
         </div>
       </div>
@@ -280,19 +263,19 @@
       <div class="form-grid">
         <div class="form-group" data-field="wbc">
           <label>WBC <span class="req">*</span></label>
-          <input type="number" name="wbc" id="wbc" placeholder="e.g., 5" min="0" step="0.1">
-          <span class="desc">White Blood Cells (per HPF)</span>
+          <input type="number" id="wbc" placeholder="e.g., 5" min="0" step="0.1">
+          <span class="desc">White Blood Cells (per HPF) — Normal: 0–5</span>
           <span class="error-msg"></span>
         </div>
         <div class="form-group" data-field="rbc">
           <label>RBC <span class="req">*</span></label>
-          <input type="number" name="rbc" id="rbc" placeholder="e.g., 2" min="0" step="0.1">
-          <span class="desc">Red Blood Cells (per HPF)</span>
+          <input type="number" id="rbc" placeholder="e.g., 2" min="0" step="0.1">
+          <span class="desc">Red Blood Cells (per HPF) — Normal: 0–3</span>
           <span class="error-msg"></span>
         </div>
         <div class="form-group" data-field="epithelialCells">
           <label>Epithelial Cells <span class="req">*</span></label>
-          <select name="epithelialCells" id="epithelialCells">
+          <select id="epithelialCells">
             <option value="">Select level</option>
             <option value="NONE SEEN">None Seen</option>
             <option value="RARE">Rare</option>
@@ -306,7 +289,7 @@
         </div>
         <div class="form-group" data-field="mucousThreads">
           <label>Mucous Threads <span class="req">*</span></label>
-          <select name="mucousThreads" id="mucousThreads">
+          <select id="mucousThreads">
             <option value="">Select level</option>
             <option value="NONE SEEN">None Seen</option>
             <option value="RARE">Rare</option>
@@ -319,7 +302,7 @@
         </div>
         <div class="form-group" data-field="amorphousUrates">
           <label>Amorphous Urates <span class="req">*</span></label>
-          <select name="amorphousUrates" id="amorphousUrates">
+          <select id="amorphousUrates">
             <option value="">Select level</option>
             <option value="NONE SEEN">None Seen</option>
             <option value="RARE">Rare</option>
@@ -332,7 +315,7 @@
         </div>
         <div class="form-group" data-field="bacteria">
           <label>Bacteria <span class="req">*</span></label>
-          <select name="bacteria" id="bacteria">
+          <select id="bacteria">
             <option value="">Select level</option>
             <option value="RARE">Rare</option>
             <option value="OCCASIONAL">Occasional</option>
@@ -349,18 +332,19 @@
     <!-- Submit -->
     <div class="submit-wrap">
       <button type="submit" class="btn-primary" id="submitBtn">
-        Analyze Health
+        Analyze UTI Risk
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
     </div>
 
     <!-- Inline Result + Feedback Panel -->
-    <div id="result-panel" style="display:none;margin-top:1.5rem;animation:fadeUp 0.4s ease">
+    <div id="result-panel" style="display:none; margin-top:1.5rem; animation:fadeUp 0.4s ease">
       <div class="form-card" style="margin-bottom:0">
         <div class="section-header">
           <div class="section-icon">📋</div>
           <h2>Diagnostic Result</h2>
         </div>
+
         <!-- Result box -->
         <div id="result-box" style="border-radius:10px;padding:1.5rem;text-align:center;border:2px solid #ccc;margin-bottom:1.5rem">
           <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);margin-bottom:.4rem">UTI Diagnosis</div>
@@ -372,16 +356,32 @@
             </div>
           </div>
         </div>
+
+        <!-- Submitted values table -->
+        <h3 class="sub-heading">Submitted Values</h3>
+        <table class="detail-table">
+          <thead><tr><th>Parameter</th><th>Value</th><th>Reference Range</th></tr></thead>
+          <tbody id="detailBody"></tbody>
+        </table>
+
+        <!-- Observations -->
+        <h3 class="sub-heading">Observations</h3>
+        <ul class="obs-list" id="obsList"></ul>
+
+        <!-- Recommendations -->
+        <h3 class="sub-heading">Recommendations</h3>
+        <ul class="rec-list" id="recList"></ul>
+
         <!-- Feedback inline -->
-        <div id="feedback-section" style="text-align:center">
+        <div id="feedback-section" style="text-align:center;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)">
           <div style="font-size:.9rem;color:var(--text-muted);margin-bottom:1rem">
             <strong style="color:var(--text)">Is this diagnosis correct?</strong><br/>
             Your feedback helps improve our model.
           </div>
           <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
             <button id="fbYes" type="button" onclick="sendFeedback('Yes')" style="padding:.6rem 1.8rem;border-radius:50px;font-size:.875rem;font-weight:600;cursor:pointer;border:2px solid var(--success);color:var(--success);background:transparent;transition:all .2s">✓ Yes, Correct</button>
-            <button id="fbNo" type="button" onclick="sendFeedback('No')" style="padding:.6rem 1.8rem;border-radius:50px;font-size:.875rem;font-weight:600;cursor:pointer;border:2px solid var(--destructive);color:var(--destructive);background:transparent;transition:all .2s">✗ No, Incorrect</button>
-            <button id="fbSkip" type="button" onclick="sendFeedback(null)" style="padding:.6rem 1.8rem;border-radius:50px;font-size:.875rem;font-weight:600;cursor:pointer;border:2px solid #9ca3af;color:#9ca3af;background:transparent;transition:all .2s">Skip</button>
+            <button id="fbNo"  type="button" onclick="sendFeedback('No')"  style="padding:.6rem 1.8rem;border-radius:50px;font-size:.875rem;font-weight:600;cursor:pointer;border:2px solid var(--destructive);color:var(--destructive);background:transparent;transition:all .2s">✗ No, Incorrect</button>
+            <button id="fbSkip" type="button" onclick="sendFeedback(null)"  style="padding:.6rem 1.8rem;border-radius:50px;font-size:.875rem;font-weight:600;cursor:pointer;border:2px solid #9ca3af;color:#9ca3af;background:transparent;transition:all .2s">Skip</button>
           </div>
           <div id="feedback-done" style="display:none;font-size:.9rem;color:var(--primary);margin-top:.75rem"></div>
         </div>
@@ -391,39 +391,14 @@
     <!-- Disclaimer -->
     <div class="disclaimer" style="margin-top:1.5rem">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <p>This tool is for educational and screening purposes only and is not a medical diagnosis. Always consult a healthcare professional for medical advice.</p>
+      <p>This tool is for educational and screening purposes only and is not a medical diagnosis. Always consult a qualified urologist or healthcare professional for medical advice.</p>
     </div>
   </form>
 </div>
 
-<!-- Results -->
-<div class="results-section" id="resultsSection">
-  <div class="result-card">
-    <div class="result-header" id="resultHeader">
-      <h2 id="resultTitle">--</h2>
-      <p id="resultSubtitle">--</p>
-    </div>
-    <div class="result-body">
-      <div class="result-grid" id="resultStats"></div>
-
-      <h3 class="sub-heading">Submitted Values</h3>
-      <table class="detail-table">
-        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
-        <tbody id="detailBody"></tbody>
-      </table>
-
-      <h3 class="sub-heading">Observations</h3>
-      <ul class="risk-list" id="riskList"></ul>
-
-      <h3 class="sub-heading">Recommendations</h3>
-      <ul class="rec-list" id="recList"></ul>
-    </div>
-  </div>
-</div>
-
 <!-- Footer -->
 <footer class="footer">
-  <p>&copy; 2026 Vitanalytics. For educational purposes only. Not a substitute for professional medical advice.</p>
+  <p>&copy; 2026 VITALYTICS. For educational purposes only. Not a substitute for professional medical advice.</p>
 </footer>
 
 <script>
@@ -431,62 +406,122 @@ document.getElementById('menuBtn').addEventListener('click', () => {
   document.getElementById('navLinks').classList.toggle('open');
 });
 
-const API = '';
+const API = '';   // same-origin; change to 'https://your-backend.com' if needed
 let lastResult = null;
 
-document.getElementById('urinalysisForm').addEventListener('submit', async (e) => {
+// ── Reference ranges for numerical fields ───────────────────────────────────
+const REFS = {
+  ph:              { min: 4.5,   max: 8.0,   unit: '',      label: 'pH' },
+  specificGravity: { min: 1.005, max: 1.030, unit: '',      label: 'Specific Gravity' },
+  wbc:             { min: 0,     max: 5,     unit: '/HPF',  label: 'WBC' },
+  rbc:             { min: 0,     max: 3,     unit: '/HPF',  label: 'RBC' },
+};
+
+// Categorical severity flags (anything above these levels is concerning)
+const CHEM_FLAGS = {
+  glucose:  { normal: 'NEGATIVE', label: 'Glucose' },
+  protein:  { normal: 'NEGATIVE', label: 'Protein' },
+};
+const MICRO_FLAGS = {
+  bacteria:       { normal: ['RARE'],              label: 'Bacteria' },
+  epithelialCells:{ normal: ['NONE SEEN','RARE'],  label: 'Epithelial Cells' },
+  mucousThreads:  { normal: ['NONE SEEN','RARE'],  label: 'Mucous Threads' },
+  amorphousUrates:{ normal: ['NONE SEEN','RARE'],  label: 'Amorphous Urates' },
+};
+
+// ── Form submit ─────────────────────────────────────────────────────────────
+document.getElementById('utiForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const btn  = document.getElementById('submitBtn');
+  if (!validateForm()) return;
+
+  const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.innerHTML = 'Analyzing... <div style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle"></div>';
 
   const g = id => document.getElementById(id);
   const payload = {
-    Age:              g('age').value,
-    Gender:           g('gender').value,
-    Color:            g('color').value,
-    Transparency:     g('transparency').value,
-    pH:               g('ph').value,
+    Age:               g('age').value,
+    Gender:            g('gender').value,
+    Color:             g('color').value,
+    Transparency:      g('transparency').value,
+    pH:                g('ph').value,
     'Specific Gravity': g('specificGravity').value,
-    WBC:              g('wbc').value,
-    RBC:              g('rbc').value,
-    Glucose:          g('glucose').value,
-    Protein:          g('protein').value,
+    WBC:               g('wbc').value,
+    RBC:               g('rbc').value,
+    Glucose:           g('glucose').value,
+    Protein:           g('protein').value,
     'Epithelial Cells': g('epithelialCells').value,
-    'Mucous Threads': g('mucousThreads').value,
+    'Mucous Threads':   g('mucousThreads').value,
     'Amorphous Urates': g('amorphousUrates').value,
-    Bacteria:         g('bacteria').value,
+    Bacteria:           g('bacteria').value,
+  };
+
+  // Keep a local copy keyed by field id for result rendering
+  const localPayload = {
+    age: g('age').value, gender: g('gender').value,
+    color: g('color').value, transparency: g('transparency').value,
+    ph: g('ph').value, specificGravity: g('specificGravity').value,
+    wbc: g('wbc').value, rbc: g('rbc').value,
+    glucose: g('glucose').value, protein: g('protein').value,
+    epithelialCells: g('epithelialCells').value,
+    mucousThreads: g('mucousThreads').value,
+    amorphousUrates: g('amorphousUrates').value,
+    bacteria: g('bacteria').value,
   };
 
   try {
     const res  = await fetch(`${API}/predict/uti`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
 
     lastResult = data;
-    showUTIResult(data);
+    showUTIResult(data, localPayload);
   } catch (err) {
     alert('Prediction error: ' + err.message);
   } finally {
     btn.disabled = false;
-    btn.innerHTML = 'Analyze Health <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+    btn.innerHTML = 'Analyze UTI Risk <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
   }
 });
 
-function showUTIResult(data) {
-  const panel = document.getElementById('result-panel');
-  const box   = document.getElementById('result-box');
-  const val   = document.getElementById('result-value');
+// ── Validation ──────────────────────────────────────────────────────────────
+function validateForm() {
+  const fields = ['age','gender','color','transparency','ph','specificGravity',
+                  'wbc','rbc','glucose','protein','epithelialCells','mucousThreads',
+                  'amorphousUrates','bacteria'];
+  let ok = true;
+  fields.forEach(id => {
+    const el  = document.getElementById(id);
+    const grp = el.closest('.form-group');
+    const msg = grp.querySelector('.error-msg');
+    if (!el.value || el.value === '') {
+      grp.classList.add('error');
+      if (msg) msg.textContent = 'This field is required.';
+      ok = false;
+    } else {
+      grp.classList.remove('error');
+      if (msg) msg.textContent = '';
+    }
+  });
+  return ok;
+}
+
+// ── Show result ─────────────────────────────────────────────────────────────
+function showUTIResult(data, payload) {
+  const panel    = document.getElementById('result-panel');
+  const box      = document.getElementById('result-box');
+  const val      = document.getElementById('result-value');
   const confText = document.getElementById('conf-text');
   const confFill = document.getElementById('conf-fill');
   const fbDone   = document.getElementById('feedback-done');
 
   const isPos = data.prediction === 'POSITIVE';
   box.style.borderColor = isPos ? 'var(--destructive)' : 'var(--success)';
-  box.style.background  = isPos ? 'hsl(0,72%,97%)' : 'hsl(142,60%,97%)';
+  box.style.background  = isPos ? 'hsl(0,72%,97%)'    : 'hsl(142,60%,97%)';
   val.textContent = isPos ? 'POSITIVE' : 'NEGATIVE';
   val.style.color = isPos ? 'var(--destructive)' : 'var(--success)';
 
@@ -497,18 +532,150 @@ function showUTIResult(data) {
   confFill.style.background = isPos ? 'var(--destructive)' : 'var(--success)';
   setTimeout(() => confFill.style.width = (pct || 80) + '%', 100);
 
+  buildDetailTable(payload);
+  buildObservations(payload, isPos);
+
   // Reset feedback
   ['fbYes','fbNo','fbSkip'].forEach(id => document.getElementById(id).disabled = false);
   fbDone.style.display = 'none';
 
   panel.style.display = 'block';
-  panel.scrollIntoView({ behavior:'smooth', block:'start' });
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+// ── Detail table ────────────────────────────────────────────────────────────
+function buildDetailTable(payload) {
+  const tbody = document.getElementById('detailBody');
+  tbody.innerHTML = '';
+
+  const rows = [
+    { label: 'Age',              key: null,             val: payload.age + ' yrs',              ref: '—' },
+    { label: 'Gender',           key: null,             val: capitalize(payload.gender),         ref: '—' },
+    { label: 'Color',            key: null,             val: capitalize(payload.color),          ref: '—' },
+    { label: 'Transparency',     key: null,             val: capitalize(payload.transparency),   ref: '—' },
+    { label: 'pH',               key: 'ph',             val: payload.ph,                        ref: '4.5 – 8.0' },
+    { label: 'Specific Gravity', key: 'specificGravity',val: payload.specificGravity,           ref: '1.005 – 1.030' },
+    { label: 'WBC',              key: 'wbc',            val: payload.wbc + ' /HPF',             ref: '0 – 5 /HPF' },
+    { label: 'RBC',              key: 'rbc',            val: payload.rbc + ' /HPF',             ref: '0 – 3 /HPF' },
+    { label: 'Glucose',          key: null,             val: payload.glucose,                   ref: 'Negative' },
+    { label: 'Protein',          key: null,             val: payload.protein,                   ref: 'Negative' },
+    { label: 'Epithelial Cells', key: null,             val: capitalize(payload.epithelialCells), ref: 'None Seen / Rare' },
+    { label: 'Mucous Threads',   key: null,             val: capitalize(payload.mucousThreads),  ref: 'None Seen / Rare' },
+    { label: 'Amorphous Urates', key: null,             val: capitalize(payload.amorphousUrates), ref: 'None Seen / Rare' },
+    { label: 'Bacteria',         key: null,             val: capitalize(payload.bacteria),       ref: 'Rare' },
+  ];
+
+  rows.forEach(r => {
+    const abnormal = r.key && isNumericalAbnormal(r.key, parseFloat(payload[r.key]));
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.label}${abnormal ? '<span class="flag">⚠ HIGH</span>' : ''}</td><td style="color:${abnormal ? 'var(--destructive)' : 'inherit'}">${r.val}</td><td style="color:var(--text-muted);font-weight:400">${r.ref}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function isNumericalAbnormal(key, value) {
+  const ref = REFS[key];
+  if (!ref) return false;
+  return value < ref.min || value > ref.max;
+}
+
+function capitalize(str) {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+// ── Observations & Recommendations ─────────────────────────────────────────
+function buildObservations(payload, isPos) {
+  const obsList = document.getElementById('obsList');
+  const recList = document.getElementById('recList');
+  obsList.innerHTML = '';
+  recList.innerHTML = '';
+
+  const issues = [];
+
+  // Check numerical fields
+  Object.keys(REFS).forEach(k => {
+    const v = parseFloat(payload[k]);
+    if (isNumericalAbnormal(k, v)) {
+      const ref = REFS[k];
+      const dir = v > ref.max ? 'elevated' : 'below normal';
+      issues.push(`${ref.label} is ${dir} (${v}${ref.unit}; normal ${ref.min}–${ref.max}${ref.unit}).`);
+    }
+  });
+
+  // Check chemical categorical fields
+  if (payload.glucose !== 'NEGATIVE') {
+    issues.push(`Glucose detected in urine (${payload.glucose}) — normally should be Negative.`);
+  }
+  if (payload.protein !== 'NEGATIVE') {
+    issues.push(`Protein detected in urine (${payload.protein}) — normally should be Negative.`);
+  }
+
+  // Check microscopic categorical fields
+  const microNormals = {
+    bacteria:        ['RARE'],
+    epithelialCells: ['NONE SEEN', 'RARE'],
+    mucousThreads:   ['NONE SEEN', 'RARE'],
+    amorphousUrates: ['NONE SEEN', 'RARE'],
+  };
+  const microLabels = {
+    bacteria:        'Bacteria',
+    epithelialCells: 'Epithelial Cells',
+    mucousThreads:   'Mucous Threads',
+    amorphousUrates: 'Amorphous Urates',
+  };
+  Object.keys(microNormals).forEach(k => {
+    const val = payload[k] ? payload[k].toUpperCase() : '';
+    if (!microNormals[k].includes(val)) {
+      issues.push(`${microLabels[k]} level is ${payload[k]} — above expected normal range.`);
+    }
+  });
+
+  // Check transparency
+  if (payload.transparency && !['CLEAR', 'SLIGHTLY HAZY'].includes(payload.transparency.toUpperCase())) {
+    issues.push(`Urine transparency is ${payload.transparency} — turbidity may indicate sediment or infection.`);
+  }
+
+  if (issues.length === 0 && !isPos) {
+    addItem(obsList, 'All urinalysis parameters are within normal reference ranges.');
+  } else {
+    issues.forEach(msg => addItem(obsList, msg));
+    if (isPos && issues.length === 0) {
+      addItem(obsList, 'Model identified patterns associated with UTI despite values appearing within reference ranges.');
+    }
+  }
+
+  // Recommendations
+  if (isPos) {
+    addItem(recList, 'Consult a urologist or general physician promptly for a confirmed UTI diagnosis.');
+    addItem(recList, 'Request a urine culture and sensitivity test to identify the causative organism and appropriate antibiotic.');
+    addItem(recList, 'Increase fluid intake — drink at least 8–10 glasses of water per day to help flush the urinary tract.');
+    addItem(recList, 'Complete the full course of prescribed antibiotics; do not stop early even if symptoms improve.');
+    addItem(recList, 'Avoid bladder irritants such as caffeine, alcohol, and spicy foods until the infection clears.');
+    addItem(recList, 'Women should wipe front-to-back after using the toilet to prevent bacterial spread.');
+  } else {
+    addItem(recList, 'Maintain adequate hydration with at least 6–8 glasses of water daily to support urinary tract health.');
+    addItem(recList, 'Practice good hygiene habits to reduce the risk of bacterial contamination of the urinary tract.');
+    addItem(recList, 'Urinate after sexual intercourse to help clear any bacteria that may have entered the urethra.');
+    addItem(recList, 'Schedule regular health checkups including urinalysis as part of routine preventive care.');
+    if (issues.length > 0) {
+      addItem(recList, 'Some values are outside normal ranges — follow up with your physician for further interpretation.');
+    }
+  }
+}
+
+function addItem(ul, text) {
+  const li = document.createElement('li');
+  li.textContent = text;
+  ul.appendChild(li);
+}
+
+// ── Feedback ────────────────────────────────────────────────────────────────
 async function sendFeedback(val) {
   ['fbYes','fbNo','fbSkip'].forEach(id => document.getElementById(id).disabled = true);
+  const done = document.getElementById('feedback-done');
+
   if (val === null) {
-    const done = document.getElementById('feedback-done');
     done.textContent = 'Response saved without feedback.';
     done.style.display = 'block';
     return;
@@ -516,19 +683,14 @@ async function sendFeedback(val) {
   if (!lastResult) return;
   try {
     await fetch(`${API}/feedback`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: lastResult.id, tab: lastResult.tab, feedback: val })
     });
   } catch(e) { console.warn('Feedback error', e); }
-  const done = document.getElementById('feedback-done');
   done.textContent = '✓ Thank you for your feedback!';
   done.style.display = 'block';
 }
-
-
 </script>
-
-
-
 </body>
 </html>
